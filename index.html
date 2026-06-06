@@ -620,7 +620,7 @@ function copyDlLink(){
 function openIDM(){
   if(!S.cur||!S.cur.url)return;
   // Try IDM protocol
-  window.location.href='idm://'+S.cur.url.replace(/^https?:\/\//,'');
+  window.location.href='idm://'+S.cur.url.replace('https://','').replace('http://','');
   setTimeout(function(){
     // Fallback: open with intent for Android
     window.open(S.cur.url,'_blank');
