@@ -449,120 +449,70 @@ function doGate(){
 
 // ═══ XTREAM API JSON ═══
 // Usa API JSON em vez de M3U - mais rapido e sem problemas de certificado
-var BASE = PROXY + '/player_api.php?username=' + USR + '&password=' + PWD;
+
 
 async function loadAll(){
   if(LOADED)return;
-  showLoad(true,'A ligar ao servidor Xtream...',10,'');
-  try {
-    // 1. Verificar credenciais
-    showLoad(true,'A verificar credenciais...',15,'');
-    var info = await apiGet('&action=get_live_categories');
-    // Se chegou aqui, certificado aceite e credenciais OK
-
-    // 2. Carregar categorias de canais ao vivo
-    showLoad(true,'A carregar canais...',25,'');
-    var liveCats = await apiGet('&action=get_live_categories');
-    var liveStreams = await apiGet('&action=get_live_streams');
-
-    // 3. Carregar categorias VOD
-    showLoad(true,'A carregar filmes...',50,'');
-    var vodCats = await apiGet('&action=get_vod_categories');
-    var vodStreams = await apiGet('&action=get_vod_streams');
-
-    // 4. Carregar series
-    showLoad(true,'A carregar series...',75,'');
-    var serCats = await apiGet('&action=get_series_categories');
-    var serStreams = await apiGet('&action=get_series');
-
-    showLoad(true,'A processar...',90,'');
-
-    // Mapear categorias
-    var liveCatMap = {}, vodCatMap = {}, serCatMap = {};
-    if(Array.isArray(liveCats)) liveCats.forEach(function(c){liveCatMap[c.category_id]=c.category_name;});
-    if(Array.isArray(vodCats))  vodCats.forEach(function(c){vodCatMap[c.category_id]=c.category_name;});
-    if(Array.isArray(serCats))  serCats.forEach(function(c){serCatMap[c.category_id]=c.category_name;});
-
-    // Processar canais ao vivo
-    CH = [];
-    if(Array.isArray(liveStreams)){
-      liveStreams.forEach(function(s,i){
-        CH.push({
-          id: s.stream_id || i,
-          name: s.name || '',
-          cat: liveCatMap[s.category_id] || s.category_id || 'Geral',
-          ico: s.stream_icon || '',
-          url: PROXY + '/' + USR + '/' + PWD + '/' + s.stream_id + '.ts',
-          _t: 'ch'
-        });
-      });
-    }
-
-    // Processar filmes
-    MOV = [];
-    if(Array.isArray(vodStreams)){
-      vodStreams.forEach(function(s,i){
-        MOV.push({
-          id: 10000 + (s.stream_id || i),
-          name: s.name || '',
-          cat: vodCatMap[s.category_id] || s.category_id || 'Geral',
-          ico: s.stream_icon || '',
-          url: PROXY + '/movie/' + USR + '/' + PWD + '/' + s.stream_id + '.' + (s.container_extension || 'mp4'),
-          _t: 'mov'
-        });
-      });
-    }
-
-    // Processar series
-    SER = [];
-    if(Array.isArray(serStreams)){
-      serStreams.forEach(function(s,i){
-        SER.push({
-          id: 20000 + (s.series_id || i),
-          name: s.name || '',
-          cat: serCatMap[s.category_id] || s.category_id || 'Geral',
-          ico: s.cover || '',
-          url: '', // series precisam de episodio especifico
-          series_id: s.series_id,
-          _t: 'ser'
-        });
-      });
-    }
-
-    LOADED = true;
-    toast(CH.length + ' canais, ' + MOV.length + ' filmes, ' + SER.length + ' series', 'ok');
-
-  } catch(ex) {
-    console.error('Xtream API error:', ex.message);
-    showLoad(false);
-    G('cnt').innerHTML = '<div class="empty"><div class="empty-ic">&#128225;</div>' +
-      '<div class="empty-tx">Erro de ligacao</div>' +
-      '<div class="empty-sb">Verifica a tua ligacao a internet e tenta novamente.</div>' +
-      '<div style="margin-top:16px"><button id="retryBtn" style="padding:10px 24px;background:var(--acc);border:none;border-radius:30px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128259; Tentar novamente</button></div></div>';
-    var rb=G('retryBtn');if(rb)rb.addEventListener('click',function(){LOADED=false;loadAll();});
-    return;
+  showLoad(true,'A ligar ao servidor...',10,'');
+  var urls=[
+    PROXY+'/get.php?username='+USR+'&password='+PWD+'&type=m3u_plus&output=ts',
+    PROXY+'/get.php?username='+USR+'&password='+PWD+'&type=m3u_plus',
+    PROXY+'/get.php?username='+USR+'&password='+PWD+'&type=m3u'
+  ];
+  var txt=null;
+  for(var i=0;i<urls.length;i++){
+    showLoad(true,'A carregar playlist...',20+i*20,'Tentativa '+(i+1)+'/3');
+    try{txt=await fetchM3U(urls[i]);if(txt&&txt.indexOf('#EXTINF')>=0)break;}catch(ex){console.warn(ex.message);}
   }
-
+  if(txt&&txt.indexOf('#EXTINF')>=0){
+    showLoad(true,'A processar...',85,'');
+    parseM3U(txt);
+    LOADED=true;
+    toast(CH.length+' canais, '+MOV.length+' filmes, '+SER.length+' series','ok');
+  } else {
+    toast('Erro ao carregar. Verifica a ligacao.','err');
+  }
   showLoad(false);
   updateBadges();
   renderSec();
 }
 
-async function apiGet(params){
-  var url = BASE + params;
-  var ctrl = new AbortController();
-  var tid = setTimeout(function(){ctrl.abort();}, 30000);
-  try {
-    var r = await fetch(url, {signal: ctrl.signal, cache: 'no-store'});
-    clearTimeout(tid);
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    var json = await r.json();
-    return json;
-  } catch(e) {
-    clearTimeout(tid);
-    throw e;
+function parseM3U(txt){
+  CH=[];MOV=[];SER=[];
+  var lines=txt.split('\n'),cur={},idx=0;
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i].trim();
+    if(l.indexOf('#EXTINF')===0){
+      cur={};
+      var nm=l.match(/,(.+)$/);if(nm)cur.name=nm[1].trim();
+      var grp=l.match(/group-title="([^"]*)"/i);if(grp)cur.cat=grp[1].trim();
+      var logo=l.match(/tvg-logo="([^"]*)"/i);if(logo&&logo[1]&&logo[1].indexOf('http')===0)cur.ico=logo[1].trim();
+    } else if(l.length>5&&l.charAt(0)!=='#'){
+      cur.url=l.trim().replace('https://campelo.c2018.xyz:443',PROXY).replace('http://campelo.c2018.xyz:443',PROXY);
+      cur.id=++idx;
+      cur.name=cur.name||('Item '+idx);
+      cur.cat=cur.cat||'Geral';
+      cur.ico=cur.ico||'';
+      var g=cur.cat.toLowerCase(),u=cur.url.toLowerCase();
+      if(u.indexOf('/movie/')>=0||g.indexOf('movie')>=0||g.indexOf('filme')>=0||g.indexOf('vod')>=0||g.indexOf('novidade')>=0||g.indexOf('cinema')>=0){
+        cur._t='mov';MOV.push(JSON.parse(JSON.stringify(cur)));
+      } else if(u.indexOf('/series/')>=0||g.indexOf('serie')>=0||g.indexOf('season')>=0||g.indexOf('temp')>=0){
+        cur._t='ser';SER.push(JSON.parse(JSON.stringify(cur)));
+      } else {
+        cur._t='ch';CH.push(JSON.parse(JSON.stringify(cur)));
+      }
+      cur={};
+    }
   }
 }
+
+async function fetchM3U(url){
+  var ctrl=new AbortController(),tid=setTimeout(function(){ctrl.abort();},30000);
+  try{var r=await fetch(url,{signal:ctrl.signal,cache:'no-store'});clearTimeout(tid);if(!r.ok)throw new Error('HTTP '+r.status);return await r.text();}
+  catch(e){clearTimeout(tid);throw e;}
+}
+
+
 
 function updateBadges(){
   var tv=G('nb-tv');if(tv)tv.textContent=CH.length;
