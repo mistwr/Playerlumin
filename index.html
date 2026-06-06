@@ -204,13 +204,7 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
     <div class="sb-nav">
       <div class="nsl">Principal</div>
       <div class="ni on" id="ni-home"><span class="ni-ic">&#9635;</span>Inicio</div>
-      <div class="ni" id="ni-tv"><span class="ni-ic">&#128250;</span>TV Portugal<span class="nb" id="nb-tv">0</span></div>
-      <div class="ni" id="ni-world"><span class="ni-ic">&#127757;</span>Mundo<span class="nb" id="nb-world">0</span></div>
-      <div class="ni" id="ni-news"><span class="ni-ic">&#128240;</span>Noticias<span class="nb" id="nb-news">0</span></div>
-      <div class="ni" id="ni-doc"><span class="ni-ic">&#128301;</span>Documentarios<span class="nb" id="nb-doc">0</span></div>
-      <div class="ni" id="ni-wild"><span class="ni-ic">&#129409;</span>Vida Selvagem<span class="nb" id="nb-wild">0</span></div>
-      <div class="ni" id="ni-kids"><span class="ni-ic">&#129490;</span>Criancas<span class="nb" id="nb-kids">0</span></div>
-      <div class="ni" id="ni-ent"><span class="ni-ic">&#127917;</span>Entretenimento<span class="nb" id="nb-ent">0</span></div>
+      <div class="ni" id="ni-tv"><span class="ni-ic">&#128250;</span>TV ao Vivo<span class="nb" id="nb-tv">0</span></div>
       <div class="nsl">VOD</div>
       <div class="ni" id="ni-mov"><span class="ni-ic">&#127909;</span>Filmes<span class="nb" id="nb-mv">0</span></div>
       <div class="ni" id="ni-ser"><span class="ni-ic">&#127871;</span>Series<span class="nb" id="nb-sr">0</span></div>
@@ -278,52 +272,15 @@ var USR = 'Nk2XcKzrgvBq';
 var PWD = 'xhma8TBna9Qx';
 
 // ════ CANAIS GRATUITOS ════
-var CH = [
-  {id:1,  name:'RTP 1',           cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTP1.png',           url:'https://streaming-live.rtp.pt/liverepeater/smil:rtp1.smil/playlist.m3u8'},
-  {id:2,  name:'RTP 2',           cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTP2.png',           url:'https://streaming-live.rtp.pt/liverepeater/smil:rtp2.smil/playlist.m3u8'},
-  {id:3,  name:'RTP 3',           cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTP3.png',           url:'https://streaming-live.rtp.pt/liverepeater/smil:rtp3.smil/playlist.m3u8'},
-  {id:4,  name:'RTP Internacional',cat:'Portugal',     ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTPInternacional.png',url:'https://streaming-live.rtp.pt/liverepeater/smil:rtpi.smil/playlist.m3u8'},
-  {id:5,  name:'RTP Acores',      cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTPAcores.png',       url:'https://streaming-live.rtp.pt/liverepeater/smil:rtpacores.smil/playlist.m3u8'},
-  {id:6,  name:'RTP Madeira',     cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTPMadeira.png',      url:'https://streaming-live.rtp.pt/liverepeater/smil:rtpmadeira.smil/playlist.m3u8'},
-  {id:7,  name:'RTP Memoria',     cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/RTPMemoria.png',      url:'https://streaming-live.rtp.pt/liverepeater/smil:rtpmemoria.smil/playlist.m3u8'},
-  {id:8,  name:'ARTV',            cat:'Portugal',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/ARTV.png',            url:'https://streaming-live.rtp.pt/liverepeater/smil:artv.smil/playlist.m3u8'},
-  {id:9,  name:'TPA Angola',      cat:'Mundo',         ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/TPA.png',             url:'https://tpastreamhls.streaming.mediaservices.windows.net/0ce7a03e-0319-41cc-a9da-29e79dad13a7/tpa_live.ism/manifest(format=m3u8-aapl)'},
-  {id:10, name:'TV Record Brasil', cat:'Mundo',        ico:'',                                                                                  url:'https://d3fenhwk83s7b3.cloudfront.net/r7/livestream.m3u8'},
-  {id:20, name:'Euronews PT',     cat:'Noticias',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/euronews-logo-225x225.png', url:'https://euronews-live-por-pt.fast.rakuten.tv/v1/manifest/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6572/7392d4f0-7e24-4dbe-8482-f165e712eeed/5.m3u8'},
-  {id:21, name:'CNN Brasil',      cat:'Noticias',      ico:'https://raw.githubusercontent.com/LITUATUI/M3UPT/main/logos/CNN-Brasil.png',       url:'https://d25usgadhphvwi.cloudfront.net/hls/main.m3u8'},
-  {id:22, name:'DW English',      cat:'Noticias',      ico:'',                                                                                  url:'https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8'},
-  {id:23, name:'Al Jazeera',      cat:'Noticias',      ico:'',                                                                                  url:'https://live-hls-web-aje.getaj.net/AJE/index.m3u8'},
-  {id:24, name:'France 24 EN',    cat:'Noticias',      ico:'',                                                                                  url:'https://static.france24.com/live/F24_EN_LO_HLS/live_web.m3u8'},
-  {id:25, name:'France 24 FR',    cat:'Noticias',      ico:'',                                                                                  url:'https://static.france24.com/live/F24_FR_LO_HLS/live_web.m3u8'},
-  {id:26, name:'NHK World',       cat:'Noticias',      ico:'',                                                                                  url:'https://nhkworld-vh.akamaihd.net/i/nhkworld/livew/master.m3u8'},
-  {id:27, name:'CGTN',            cat:'Noticias',      ico:'',                                                                                  url:'https://livecgtn.akamaized.net/stream/app1/index.m3u8'},
-  {id:28, name:'RT News',         cat:'Noticias',      ico:'',                                                                                  url:'https://rt-glb.rttv.com/live/rtnews/playlist.m3u8'},
-  {id:40, name:'Nat Geo Wild',    cat:'Documentarios', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d3c76fa6dc0d40009de0af2/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:41, name:'Discovery',       cat:'Documentarios', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cb48f42f2d0c74a0c36d7e6/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:42, name:'History',         cat:'Documentarios', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cc8b66e03e43a001a8deb5b/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:43, name:'Smithsonian',     cat:'Documentarios', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cf28e4b28a9e44d8902dbb3/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:44, name:'Science Channel', cat:'Documentarios', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cf28e5f28a9e44d8902dbf0/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:45, name:'True Crime',      cat:'Documentarios', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c5a8534b4db0b0009f2f8e1/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:50, name:'Animal Planet',   cat:'Vida Selvagem', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cef5a04de5a74001af60b1c/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:51, name:'Nat Geo Wild 2',  cat:'Vida Selvagem', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d3c76fa6dc0d40009de0af5/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:52, name:'Safari Live',     cat:'Vida Selvagem', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d3c76ef6dc0d40009de0ae6/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:53, name:'Oceans Nature',   cat:'Vida Selvagem', ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d3c76f26dc0d40009de0aed/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:60, name:'Cartoon Network', cat:'Criancas',      ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c32b5c08e860c001aef44f5/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:61, name:'Nickelodeon',     cat:'Criancas',      ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c32b5c08e860c001aef44fa/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:62, name:'Disney Junior',   cat:'Criancas',      ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c32b5c08e860c001aef4501/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:63, name:'Kids Family',     cat:'Criancas',      ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e6a46c01c74cc0007d0c461/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:70, name:'MTV',             cat:'Entretenimento',ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c32b5c08e860c001aef4502/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:71, name:'Comedy',          cat:'Entretenimento',ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c32b5c08e860c001aef44fc/master.m3u8?deviceId=lumplayer&deviceType=web'},
-  {id:72, name:'Classic TV',      cat:'Entretenimento',ico:'',                                                                                  url:'https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c32b5c08e860c001aef44ff/master.m3u8?deviceId=lumplayer&deviceType=web'}
-];
+var CH = []; // filled from Xtream server
 
 var MOV = [], SER = [], FAVS = [], HIST = [], CUR = null, HLS = null;
 var SEC = 'home', CATF = 'Todos', GENF = 'Todos', SERF = 'Todos', Q = '';
 var VOL = 90, MUTED = false, SBOPEN = false, CTMR = null, SCRUB = false, SCRUBV = 0;
 var RETRIES = 0, VODOK = false;
 
-var CATS = {tv:'Portugal', world:'Mundo', news:'Noticias', doc:'Documentarios', wild:'Vida Selvagem', kids:'Criancas', ent:'Entretenimento'};
-var TITLES = {home:'LUMIN AI PLAYER', tv:'TV Portugal', world:'Mundo', news:'Noticias', doc:'Documentarios', wild:'Vida Selvagem', kids:'Criancas', ent:'Entretenimento', mov:'Filmes', ser:'Series', fav:'Favoritos', his:'Historico', srch:'Pesquisa', cfg:'Definicoes'};
+var CATS = {}; // filled dynamically from Xtream categories
+var TITLES = {home:'LUMIN AI PLAYER', tv:'TV ao Vivo', mov:'Filmes', ser:'Series', fav:'Favoritos', his:'Historico', srch:'Pesquisa', cfg:'Definicoes'};
 var SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 var PANELS = ['panel-cast','panel-qual','panel-spd','panel-dl'];
 
@@ -366,7 +323,7 @@ window.addEventListener('DOMContentLoaded', function() {
   G('gBtn').addEventListener('click', doGate);
 
   // Nav items
-  var navIds = ['home','tv','world','news','doc','wild','kids','ent','mov','ser','fav','his','srch','cfg'];
+  var navIds = ['home','tv','mov','ser','fav','his','srch','cfg'];
   for(var i=0; i<navIds.length; i++) {
     (function(s) {
       var el = G('ni-'+s);
@@ -471,10 +428,11 @@ async function loadVOD() {
   if(txt && txt.indexOf('#EXTINF') >= 0) {
     showGLoad(true, 'A processar...', 80, '');
     var all = parseM3U(txt);
+    CH  = all.filter(function(x) { return x._t === 'ch'; });
     MOV = all.filter(function(x) { return x._t === 'mov'; });
     SER = all.filter(function(x) { return x._t === 'ser'; });
     VODOK = true;
-    toast(MOV.length + ' filmes, ' + SER.length + ' series', 'ok');
+    toast(CH.length + ' canais, ' + MOV.length + ' filmes, ' + SER.length + ' series', 'ok');
   } else {
     toast('VOD indisponivel de momento', 'warn');
   }
@@ -507,8 +465,11 @@ function parseM3U(txt) {
       } else if(u.indexOf('/series/') >= 0 || g.indexOf('serie') >= 0 || g.indexOf('season') >= 0 || g.indexOf('temp') >= 0) {
         cur._t = 'ser';
         items.push(JSON.parse(JSON.stringify(cur)));
+      } else {
+        cur._t = 'ch';
+        cur.cat = cur.group || 'Geral';
+        items.push(JSON.parse(JSON.stringify(cur)));
       }
-      // ignore live channels from xtream
       cur = {};
     }
   }
@@ -528,11 +489,7 @@ async function fetchTxt(url) {
 
 // ════ BADGES ════
 function updateBadges() {
-  var counts = {tv:0, world:0, news:0, doc:0, wild:0, kids:0, ent:0};
-  for(var i=0; i<CH.length; i++) {
-    for(var k in CATS) { if(CH[i].cat === CATS[k]) counts[k]++; }
-  }
-  for(var k in counts) { var el = G('nb-'+k); if(el) el.textContent = counts[k]; }
+  var tv = G('nb-tv'); if(tv) tv.textContent = CH.length;
   G('nb-mv').textContent = MOV.length;
   G('nb-sr').textContent = SER.length;
   var fn = FAVS.length;
@@ -562,7 +519,7 @@ function onSearch(q) { Q=q; if(q && SEC==='home') SEC='srch'; renderSec(); }
 function renderSec() {
   var c = G('cnt');
   if(SEC==='home') c.innerHTML = rHome();
-  else if(CATS[SEC]) c.innerHTML = rCat(SEC);
+  else if(SEC==='tv') c.innerHTML = rTV();
   else if(SEC==='mov') c.innerHTML = rMov();
   else if(SEC==='ser') c.innerHTML = rSer();
   else if(SEC==='fav') c.innerHTML = rFav();
@@ -643,36 +600,33 @@ function chByCat(cat) {
 }
 
 function rHome() {
-  var ptChs = CH.filter(function(c){return c.cat==='Portugal';}).slice(0,4);
-  var nwChs = CH.filter(function(c){return c.cat==='Noticias';}).slice(0,4);
   var h = '<div class="hero">';
   h += '<div class="h-bdg">LUMIN AI PLAYER</div>';
   h += '<div class="h-ttl">O teu entretenimento sem limites</div>';
-  h += '<div class="h-sub">Canais gratuitos reais + filmes e series da tua conta.</div>';
+  h += '<div class="h-sub">TV ao vivo, filmes e series da tua conta Xtream.</div>';
   h += '<div class="h-btns">';
-  h += '<button class="hbtn p" data-nav="tv">&#128250; TV Portugal</button>';
-  h += '<button class="hbtn s" data-nav="news">&#128240; Noticias</button>';
+  h += '<button class="hbtn p" data-nav="tv">&#128250; TV ao Vivo</button>';
   h += '<button class="hbtn s" data-nav="mov">&#127909; Filmes</button>';
+  h += '<button class="hbtn s" data-nav="ser">&#127871; Series</button>';
   h += '</div></div>';
   h += '<div class="stats">';
-  h += '<div class="sc" data-nav="tv"><div class="sc-ic">&#127987;</div><div class="sc-n">'+CH.filter(function(c){return c.cat==='Portugal';}).length+'</div><div class="sc-l">PT Canais</div></div>';
-  h += '<div class="sc" data-nav="news"><div class="sc-ic">&#128240;</div><div class="sc-n">'+CH.filter(function(c){return c.cat==='Noticias';}).length+'</div><div class="sc-l">Noticias</div></div>';
+  h += '<div class="sc" data-nav="tv"><div class="sc-ic">&#128250;</div><div class="sc-n">'+CH.length+'</div><div class="sc-l">Canais</div></div>';
   h += '<div class="sc" data-nav="mov"><div class="sc-ic">&#127909;</div><div class="sc-n">'+MOV.length+'</div><div class="sc-l">Filmes</div></div>';
   h += '<div class="sc" data-nav="ser"><div class="sc-ic">&#127871;</div><div class="sc-n">'+SER.length+'</div><div class="sc-l">Series</div></div>';
+  h += '<div class="sc" data-nav="fav"><div class="sc-ic">&#11088;</div><div class="sc-n">'+FAVS.length+'</div><div class="sc-l">Favoritos</div></div>';
   h += '</div>';
-  if(ptChs.length) { h += '<div class="sec"><div class="sec-hdr"><div class="sec-ttl">&#128250; TV Portugal</div><button class="sec-more" data-nav="tv">Ver todos</button></div><div class="cgrid">'; for(var i=0;i<ptChs.length;i++) h+=cC(ptChs[i]); h+='</div></div>'; }
-  if(nwChs.length) { h += '<div class="sec"><div class="sec-hdr"><div class="sec-ttl">&#128240; Noticias</div><button class="sec-more" data-nav="news">Ver todos</button></div><div class="cgrid">'; for(var i=0;i<nwChs.length;i++) h+=cC(nwChs[i]); h+='</div></div>'; }
+  if(CH.length) { h += '<div class="sec"><div class="sec-hdr"><div class="sec-ttl">&#128250; TV ao Vivo</div><button class="sec-more" data-nav="tv">Ver todos</button></div><div class="cgrid">'; for(var i=0;i<Math.min(CH.length,6);i++) h+=cC(CH[i]); h+='</div></div>'; }
   if(MOV.length) { h += '<div class="sec"><div class="sec-hdr"><div class="sec-ttl">&#127909; Filmes</div><button class="sec-more" data-nav="mov">Ver todos</button></div><div class="mgrid">'; for(var i=0;i<Math.min(MOV.length,6);i++) h+=mC(MOV[i]); h+='</div></div>'; }
+  if(!CH.length && !MOV.length) { h += '<div class="empty"><div class="empty-ic">&#128250;</div><div class="empty-tx">A carregar...</div><div class="empty-sb">Aguarda o carregamento do servidor</div></div>'; }
   return h;
 }
 
-function rCat(sec) {
-  var cat = CATS[sec];
-  var list = chByCat(cat);
-  var h = '';
-  if(list.length) { h += '<div class="cgrid">'; for(var i=0;i<list.length;i++) h+=cC(list[i]); h+='</div>'; }
-  else h = emptyS('&#128225;','Sem canais','');
-  return h;
+function rTV() {
+  if(!CH.length) return emptyS('&#128250;','A carregar canais...','Aguarda o carregamento do servidor');
+  var cats = ['Todos'];
+  for(var i=0;i<CH.length;i++) { if(CH[i].cat && cats.indexOf(CH[i].cat)<0) cats.push(CH[i].cat); }
+  var list = CH.filter(function(c) { return (CATF==='Todos'||c.cat===CATF) && (!Q||c.name.toLowerCase().indexOf(Q.toLowerCase())>=0); });
+  return mkPills(cats,'catF',CATF) + (list.length ? '<div class="cgrid">'+list.map(cC).join('')+'</div>' : emptyS('&#128250;','Sem canais',''));
 }
 
 function rMov() {
@@ -727,11 +681,10 @@ function rSrch() {
 }
 
 function rCfg() {
-  var ptCt = CH.filter(function(c){return c.cat==='Portugal';}).length;
-  var othCt = CH.length - ptCt;
+  var ptCt = CH.length;
+  var othCt = 0;
   return '<div class="sset"><div class="sset-sec">Canais Gratuitos</div>' +
-    '<div class="sset-it"><span class="sset-ic">&#127987;</span><span class="sset-lb">Canais PT</span><span class="sset-vl" style="color:var(--grn)">'+ptCt+'</span></div>' +
-    '<div class="sset-it"><span class="sset-ic">&#127757;</span><span class="sset-lb">Canais Mundo</span><span class="sset-vl" style="color:var(--grn)">'+othCt+'</span></div>' +
+    '<div class="sset-it"><span class="sset-ic">&#128250;</span><span class="sset-lb">Canais ao Vivo</span><span class="sset-vl" style="color:var(--grn)">'+ptCt+'</span></div>' +
     '</div><div class="sset"><div class="sset-sec">VOD Xtream</div>' +
     '<div class="sset-it"><span class="sset-ic">&#127909;</span><span class="sset-lb">Filmes</span><span class="sset-vl" style="color:var(--grn)">'+MOV.length+'</span></div>' +
     '<div class="sset-it"><span class="sset-ic">&#127871;</span><span class="sset-lb">Series</span><span class="sset-vl" style="color:var(--grn)">'+SER.length+'</span></div>' +
@@ -818,7 +771,7 @@ function startPlay(item) {
   document.body.style.overflow = 'hidden';
   G('pTtl').textContent = item.name;
   G('pCatTxt').textContent = item.cat || item.category || '';
-  G('pLive').style.display = (item.cat && CH.indexOf(item)>=0) ? 'flex' : 'none';
+  G('pLive').style.display = (item._t==='ch') ? 'flex' : 'none';
   G('pLdNm').textContent = item.name;
   G('pLdSb').textContent = 'A ligar...';
   G('pLdErr').style.display = 'none'; G('pLdErr').textContent = '';
@@ -836,7 +789,7 @@ function initStream(item) {
   var vid = G('pvid');
   if(HLS) { HLS.destroy(); HLS = null; }
   vid.pause(); vid.removeAttribute('src'); vid.load();
-  var isLive = !!(item.cat); // channel items have .cat, VOD items have .category
+  var isLive = (item._t === 'ch');
   var url = item.url;
 
   if(!isLive) {
@@ -849,13 +802,14 @@ function initStream(item) {
     return;
   }
 
-  // Live channels: try HLS then native
+  // Live channels: try native first (faster, no CORS), then HLS.js
   var m3u8 = url.replace(/\.ts(\?.*)?$/, '.m3u8$1');
   if(m3u8 === url && url.indexOf('.m3u8') < 0) m3u8 = url;
   tryAttempts([
-    {url: m3u8, method: 'hls'},
-    {url: url,  method: 'native'},
-    {url: m3u8, method: 'native'}
+    {url: m3u8, method: 'native', label: 'native m3u8'},
+    {url: url,  method: 'native', label: 'native ts'},
+    {url: m3u8, method: 'hls',    label: 'hls m3u8'},
+    {url: url,  method: 'hls',    label: 'hls ts'}
   ], 0);
 }
 
@@ -880,7 +834,7 @@ function doNative(url, onFail) {
   var f = function() { if(ok)return; ok=true; vid.removeEventListener('canplay',s); if(onFail) onFail(); };
   vid.addEventListener('canplay', s, {once:true});
   vid.addEventListener('error', f, {once:true});
-  setTimeout(function() { if(!ok){ok=true; vid.removeEventListener('canplay',s); vid.removeEventListener('error',f); if(onFail) onFail();} }, 5000);
+  setTimeout(function() { if(!ok){ok=true; vid.removeEventListener('canplay',s); vid.removeEventListener('error',f); if(onFail) onFail();} }, 4000);
 }
 
 function doHLS(url, onFail) {
