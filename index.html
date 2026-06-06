@@ -239,8 +239,17 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
       <span class="p-time" id="pTime">--:-- / --:--</span>
       <button class="pbtn" id="pBQ" style="font-size:10px;font-weight:800">AUTO</button>
       <button class="pbtn" id="pBS" style="font-size:10px;font-weight:800">1x</button>
+      <button class="pbtn" id="pCast" title="Transmitir">&#128225;</button>
       <button class="pbtn" id="pFS">&#9974;</button>
     </div>
+  </div>
+  <div class="ppanel" id="panel-cast">
+    <div class="pp-title">Transmitir para</div>
+    <div class="pp-item" id="castAirplay"><span style="font-size:15px">&#63743;</span>&nbsp; AirPlay (Safari)</div>
+    <div class="pp-item" id="castChrome"><span style="font-size:15px">&#128250;</span>&nbsp; Chromecast</div>
+    <div class="pp-item" id="castVLC"><span style="font-size:15px">&#127909;</span>&nbsp; Abrir em VLC</div>
+    <div class="pp-item" id="castCopy"><span style="font-size:15px">&#128279;</span>&nbsp; Copiar link stream</div>
+    <div class="pp-item" id="castDl"><span style="font-size:15px">&#11015;</span>&nbsp; Download (filmes)</div>
   </div>
   <div class="ppanel" id="panel-qual"><div class="pp-title">Qualidade</div><div id="qualList"></div></div>
   <div class="ppanel" id="panel-spd"><div class="pp-title">Velocidade</div><div id="spdList"></div></div>
@@ -258,7 +267,7 @@ var CH=[],MOV=[],SER=[],FAVS=[],HIST=[],CUR=null,HLS=null;
 var SEC='home',CATF='Todos',GENF='Todos',SERF='Todos',Q='';
 var VOL=90,MUTED=false,SBOPEN=false,CTMR=null,SCRUB=false,SCRUBV=0,LOADED=false;
 var SPEEDS=[0.5,0.75,1,1.25,1.5,2];
-var PANELS=['panel-qual','panel-spd'];
+var PANELS=['panel-cast','panel-qual','panel-spd'];
 var TITLES={home:'LUMIN AI PLAYER',tv:'TV ao Vivo',mov:'Filmes',ser:'Series',fav:'Favoritos',his:'Historico',srch:'Pesquisa',cfg:'Definicoes'};
 
 function G(id){return document.getElementById(id);}
@@ -293,6 +302,52 @@ window.addEventListener('DOMContentLoaded',function(){
   G('pBQ').addEventListener('click',function(){togP('qual');});
   G('pBS').addEventListener('click',function(){togP('spd');});
   G('pFS').addEventListener('click',function(){var p=G('player');if(document.fullscreenElement)document.exitFullscreen().catch(function(){});else p.requestFullscreen().catch(function(){});});
+  G('pCast').addEventListener('click',function(){togP('cast');});
+  // Cast actions
+  G('castAirplay').addEventListener('click',function(){
+    var vid=G('pvid');
+    if(vid.webkitShowPlaybackTargetPicker){vid.webkitShowPlaybackTargetPicker();toast('Seleciona o dispositivo AirPlay','ok');}
+    else{toast('AirPlay: abre no Safari para usar esta funcao','warn');}
+    closeAllP();
+  });
+  G('castChrome').addEventListener('click',function(){
+    // Chromecast via Remote Playback API
+    var vid=G('pvid');
+    if(vid.remote&&vid.remote.prompt){
+      vid.remote.prompt().then(function(){toast('Chromecast ligado','ok');}).catch(function(){toast('Chromecast: abre no Chrome para usar','warn');});
+    } else {
+      toast('Chromecast: usa o menu do Chrome (icone de transmissao)','warn');
+    }
+    closeAllP();
+  });
+  G('castVLC').addEventListener('click',function(){
+    if(!CUR||!CUR.url){closeAllP();return;}
+    window.open('vlc://'+CUR.url,'_blank');
+    toast('A abrir VLC...','ok');
+    closeAllP();
+  });
+  G('castCopy').addEventListener('click',function(){
+    if(!CUR||!CUR.url){closeAllP();return;}
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(CUR.url).then(function(){toast('Link copiado! Cola no VLC, Kodi, Smart TV...','ok');});
+    } else {
+      var ta=document.createElement('textarea');ta.value=CUR.url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+      toast('Link copiado!','ok');
+    }
+    closeAllP();
+  });
+  G('castDl').addEventListener('click',function(){
+    if(!CUR||!CUR.url||CUR._t==='ch'){
+      toast('Download apenas disponivel para filmes','warn');closeAllP();return;
+    }
+    var a=document.createElement('a');
+    a.href=CUR.url;
+    a.download=(CUR.name||'video').replace(/[^a-z0-9]/gi,'_')+'.mp4';
+    a.target='_blank';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    toast('Download iniciado','ok');
+    closeAllP();
+  });
   G('pRetry').addEventListener('click',function(){if(CUR)startPlay(CUR);});
   G('ptap').addEventListener('click',function(){showCtrl();closeAllP();});
   G('ptap').addEventListener('dblclick',function(){var p=G('player');if(document.fullscreenElement)document.exitFullscreen().catch(function(){});else p.requestFullscreen().catch(function(){});});
@@ -416,14 +471,10 @@ async function loadAll(){
   } catch(ex) {
     console.error('Xtream API error:', ex.message);
     showLoad(false);
-    G('cnt').innerHTML = '<div class="empty"><div class="empty-ic">&#128274;</div>' +
-      '<div class="empty-tx">Nao foi possivel ligar</div>' +
-      '<div class="empty-sb" style="line-height:1.8">Passo 1: Abre o servidor no browser e aceita o certificado.<br>Passo 2: Volta aqui e clica Tentar Novamente.</div>' +
-      '<div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;align-items:center">' +
-      '<button id="trustBtn" style="padding:10px 24px;background:var(--acc);border:none;border-radius:30px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128279; Abrir servidor (aceitar certificado)</button>' +
-      '<button id="retryBtn" style="padding:10px 24px;background:var(--bg3);border:1px solid var(--bdr);border-radius:30px;color:var(--t1);font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128259; Tentar novamente</button>' +
-      '</div></div>';
-    var tb=G('trustBtn');if(tb)tb.addEventListener('click',function(){window.open(SRV,'_blank');});
+    G('cnt').innerHTML = '<div class="empty"><div class="empty-ic">&#128225;</div>' +
+      '<div class="empty-tx">Erro de ligacao</div>' +
+      '<div class="empty-sb">Verifica a tua ligacao a internet e tenta novamente.</div>' +
+      '<div style="margin-top:16px"><button id="retryBtn" style="padding:10px 24px;background:var(--acc);border:none;border-radius:30px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128259; Tentar novamente</button></div></div>';
     var rb=G('retryBtn');if(rb)rb.addEventListener('click',function(){LOADED=false;loadAll();});
     return;
   }
