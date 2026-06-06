@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/xtream/:path*",
+      "destination": "https://campelo.c2018.xyz:443/:path*"
+    }
+  ]
+}
