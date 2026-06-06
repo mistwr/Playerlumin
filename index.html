@@ -293,6 +293,7 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
       <button class="pbtn" id="pBQ" onclick="togP('qual')" style="font-size:10px;font-weight:800">AUTO</button>
       <button class="pbtn" id="pBS" onclick="togP('spd')" style="font-size:10px;font-weight:800">1x</button>
       <button class="pbtn" onclick="togP('cast')">📡</button>
+      <button class="pbtn" onclick="openDlPanel()" title="Download" style="color:#22d3a0">⬇️</button>
       <button class="pbtn" id="pBP" onclick="togglePiP()">⧉</button>
       <button class="pbtn" onclick="toggleFS()">⛶</button>
     </div>
@@ -300,6 +301,23 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
   <div class="ppanel" id="panel-cast"><div class="pp-title">Transmitir para</div><div class="pp-item" onclick="doCast('airplay')"><span class="pp-ic">🍎</span>AirPlay</div><div class="pp-item" onclick="doCast('chrome')"><span class="pp-ic">📺</span>Chromecast</div><div class="pp-item" onclick="copyLink()"><span class="pp-ic">🔗</span>Copiar Link</div><div class="pp-item" onclick="openVLC()"><span class="pp-ic">🎬</span>Abrir em VLC</div></div>
   <div class="ppanel" id="panel-qual"><div class="pp-title">Qualidade</div><div id="qualList"></div></div>
   <div class="ppanel" id="panel-spd"><div class="pp-title">Velocidade</div><div id="spdList"></div></div>
+  <!-- DOWNLOAD PANEL -->
+  <div id="panel-dl" style="position:absolute;bottom:78px;left:0;right:0;z-index:20;margin:0 14px;background:#0b0f1c;border:1px solid rgba(99,179,255,.35);border-radius:14px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.7);display:none">
+    <div style="font-size:10px;color:#7a90b8;letter-spacing:1px;font-weight:700;text-transform:uppercase;margin-bottom:12px">⬇️ Download para Ver Offline</div>
+    <div id="dlInfo" style="font-size:12px;color:#e8f0ff;margin-bottom:12px;word-break:break-all;background:#111827;border-radius:8px;padding:10px;line-height:1.5;max-height:80px;overflow-y:auto"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button onclick="doDownload()" style="padding:11px;background:linear-gradient(135deg,#22d3a0,#0fa870);border:none;border-radius:8px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">⬇️ Download Direto</button>
+      <button onclick="copyDlLink()" style="padding:11px;background:rgba(59,158,255,.15);border:1px solid rgba(59,158,255,.3);border-radius:8px;color:#3b9eff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">🔗 Copiar URL</button>
+      <button onclick="openIDM()" style="padding:11px;background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);border-radius:8px;color:#f5c842;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">🚀 Abrir em IDM / ADM</button>
+      <button onclick="openVLCdl()" style="padding:11px;background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.25);border-radius:8px;color:#ff4d6a;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">🎬 Gravar com VLC</button>
+    </div>
+    <div style="font-size:10px;color:#3a4d6b;margin-top:10px;line-height:1.6">
+      💡 Download Direto: funciona para ficheiros mp4/mkv<br>
+      IDM/ADM: para streams TS — usa um gestor de downloads externo<br>
+      VLC: abre diretamente e podes gravar com Ficheiro → Guardar
+    </div>
+    <button onclick="closeDlPanel()" style="position:absolute;top:10px;right:12px;background:none;border:none;color:#3a4d6b;font-size:18px;cursor:pointer">✕</button>
+  </div>
 </div>
 <div id="toasts"></div>
 <script>
@@ -452,23 +470,23 @@ function initStream(item){
   tryNextAttempt(attempts, 0);
 }
 
-function tryNextAttempt(attempts, idx){
-  if(idx >= attempts.length){
+function tryNextAttempt(attempts, aidx){
+  if(aidx >= attempts.length){
     onErr('Canal indisponivel. Pode estar offline ou requer app dedicada.');
     return;
   }
-  var a=attempts[idx];
+  var a=attempts[aidx];
   G('pLdSb').textContent='A tentar... ('+a.label+')';
-  console.log('Attempt',idx+1,a.label,a.url);
+  console.log('Attempt',aidx+1,a.label,a.url);
 
   if(a.method==='hls'){
     if(typeof Hls!=='undefined' && Hls.isSupported()){
       startHLS(a.url, true, function(){
         // HLS falhou, tenta próximo
-        tryNextAttempt(attempts, idx+1);
+        tryNextAttempt(attempts, aidx+1);
       });
     } else {
-      tryNextAttempt(attempts, idx+1);
+      tryNextAttempt(attempts, aidx+1);
     }
     return;
   }
@@ -476,7 +494,7 @@ function tryNextAttempt(attempts, idx){
   // Método nativo
   playDirect(a.url, true, function(){
     // Falhou, tenta próximo
-    tryNextAttempt(attempts, idx+1);
+    tryNextAttempt(attempts, aidx+1);
   });
 }
 
@@ -562,6 +580,60 @@ function retryPlay(){if(!S.cur)return;S.retries=0;G('pLdErr').style.display='non
 function onVidErr(){var vid=G('pvid');if(!vid.error)return;var msgs={1:'Abortado',2:'Erro de rede',3:'Formato invalido',4:'Nao suportado'};onErr((msgs[vid.error.code]||'Erro')+'.\nVerifica as credenciais.');}
 function buildQual(lvs){if(!lvs||!lvs.length){G('qualList').innerHTML='<div class="pp-item on">Auto</div>';return;}var h='<div class="pp-item on" onclick="setQual(-1,this)">Auto</div>';lvs.forEach(function(lv,i){var l=lv.height?lv.height+'p':(lv.bitrate?Math.round(lv.bitrate/1000)+'k':'Nivel '+i);h+='<div class="pp-item" onclick="setQual('+i+',this)">'+l+'</div>';});G('qualList').innerHTML=h;}
 function setQual(idx,el){if(!S.hls)return;S.hls.currentLevel=idx;document.querySelectorAll('#qualList .pp-item').forEach(function(e){e.classList.remove('on');});el.classList.add('on');G('pBQ').textContent=idx===-1?'AUTO':(S.hls.levels[idx]&&S.hls.levels[idx].height?S.hls.levels[idx].height+'p':'Q'+idx);closeAllP();toast('Qualidade: '+el.textContent);}
+function openDlPanel(){
+  if(!S.cur){return;}
+  closeAllP();
+  var url=S.cur.url||'';
+  var name=S.cur.name||'video';
+  G('dlInfo').innerHTML='<b style="color:#7a90b8">Ficheiro:</b> '+eH(name)+'<br><b style="color:#7a90b8">URL:</b> <span style="color:#3b9eff">'+eH(url)+'</span>';
+  G('panel-dl').style.display='block';
+  showCtrl();
+}
+function closeDlPanel(){G('panel-dl').style.display='none';}
+function doDownload(){
+  if(!S.cur||!S.cur.url)return;
+  var url=S.cur.url;
+  var name=(S.cur.name||'video').replace(/[^a-z0-9]/gi,'_');
+  var ext=url.includes('.mkv')?'mkv':url.includes('.ts')?'ts':'mp4';
+  // Try anchor download
+  var a=document.createElement('a');
+  a.href=url;
+  a.download=name+'.'+ext;
+  a.target='_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('Download iniciado — verifica a pasta de Downloads','ok');
+  closeDlPanel();
+}
+function copyDlLink(){
+  if(!S.cur||!S.cur.url)return;
+  var url=S.cur.url;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){toast('URL copiado! Cola no teu gestor de downloads','ok');});
+  } else {
+    var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast('URL copiado!','ok');
+  }
+  closeDlPanel();
+}
+function openIDM(){
+  if(!S.cur||!S.cur.url)return;
+  // Try IDM protocol
+  window.location.href='idm://'+S.cur.url.replace(/^https?:\/\//,'');
+  setTimeout(function(){
+    // Fallback: open with intent for Android
+    window.open(S.cur.url,'_blank');
+    toast('Cola o URL no ADM / IDM para descarregar','warn');
+  },500);
+  closeDlPanel();
+}
+function openVLCdl(){
+  if(!S.cur||!S.cur.url)return;
+  window.open('vlc://'+S.cur.url,'_blank');
+  toast('VLC: Reproduzir → Guardar Stream para gravar offline','ok');
+  closeDlPanel();
+}
 function closePlayer(){var vid=G('pvid');vid.pause();vid.removeAttribute('src');vid.load();if(S.hls){S.hls.destroy();S.hls=null;}try{if(document.pictureInPictureElement)document.exitPictureInPicture();}catch(e){}if(document.fullscreenElement)document.exitFullscreen().catch(function(){});G('player').style.display='none';document.body.style.overflow='';S.cur=null;S.retries=0;closeAllP();}
 function showLD(show,nm,sb){G('pld').classList.toggle('off',!show);if(show&&nm!==undefined)G('pLdNm').textContent=nm;if(show&&sb!==undefined)G('pLdSb').textContent=sb;}
 function onTU(){var vid=G('pvid');if(!vid.duration||isNaN(vid.duration)||S.scrub)return;var p=(vid.currentTime/vid.duration)*100;G('pFill').style.width=p+'%';G('pTh').style.left=p+'%';G('pTime').textContent=fmt(vid.currentTime)+' / '+fmt(vid.duration);}
@@ -579,7 +651,7 @@ function toggleFS(){var p=G('player');if(document.fullscreenElement)document.exi
 function togglePiP(){var vid=G('pvid');if(!document.pictureInPictureEnabled){toast('PiP nao suportado','warn');return;}if(document.pictureInPictureElement){document.exitPictureInPicture();G('pBP').classList.remove('hi');}else vid.requestPictureInPicture().then(function(){G('pBP').classList.add('hi');}).catch(function(e){toast('PiP: '+e.message,'err');});}
 function tapCtrl(){showCtrl();closeAllP();}
 function showCtrl(){G('player').classList.remove('p-hide');clearTimeout(S.ctrlTmr);S.ctrlTmr=setTimeout(function(){if(!G('pvid').paused)G('player').classList.add('p-hide');},4000);}
-var PANELS=['panel-cast','panel-qual','panel-spd'];
+var PANELS=['panel-cast','panel-qual','panel-spd','panel-dl'];
 function togP(p){var pid='panel-'+p;var isOpen=G(pid).style.display==='block';closeAllP();if(!isOpen){if(p==='spd')buildSpd();G(pid).style.display='block';}showCtrl();}
 function closeAllP(){PANELS.forEach(function(p){G(p).style.display='none';});}
 function buildSpd(){var cur=G('pvid').playbackRate||1;G('spdList').innerHTML=SPEEDS.map(function(s){return '<div class="pp-item'+(s===cur?' on':'')+'" onclick="setSpd('+s+',this)">'+s+'x</div>';}).join('');}
