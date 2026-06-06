@@ -248,7 +248,8 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
 <div id="toasts"></div>
 <script>
 // ═══ CREDENCIAIS OCULTAS ═══
-var SRV='https://campelo.c2018.xyz:443';
+var SRV='https://campelo.c2018.xyz:443'; // original (used for stream URLs)
+var PROXY='/xtream'; // Vercel proxy - used for API calls (no cert issues)
 var USR='Nk2XcKzrgvBq';
 var PWD='xhma8TBna9Qx';
 
@@ -329,7 +330,7 @@ function doGate(){
 
 // ═══ XTREAM API JSON ═══
 // Usa API JSON em vez de M3U - mais rapido e sem problemas de certificado
-var BASE = SRV + '/player_api.php?username=' + USR + '&password=' + PWD;
+var BASE = PROXY + '/player_api.php?username=' + USR + '&password=' + PWD;
 
 async function loadAll(){
   if(LOADED)return;
@@ -372,7 +373,7 @@ async function loadAll(){
           name: s.name || '',
           cat: liveCatMap[s.category_id] || s.category_id || 'Geral',
           ico: s.stream_icon || '',
-          url: SRV + '/' + USR + '/' + PWD + '/' + s.stream_id + '.ts',
+          url: PROXY + '/' + USR + '/' + PWD + '/' + s.stream_id + '.ts',
           _t: 'ch'
         });
       });
@@ -387,7 +388,7 @@ async function loadAll(){
           name: s.name || '',
           cat: vodCatMap[s.category_id] || s.category_id || 'Geral',
           ico: s.stream_icon || '',
-          url: SRV + '/movie/' + USR + '/' + PWD + '/' + s.stream_id + '.' + (s.container_extension || 'mp4'),
+          url: PROXY + '/movie/' + USR + '/' + PWD + '/' + s.stream_id + '.' + (s.container_extension || 'mp4'),
           _t: 'mov'
         });
       });
