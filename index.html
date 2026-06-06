@@ -586,8 +586,14 @@ function initStream(item){
   var url=item.urlHls||item.url;
   var u=url.toLowerCase();
   var isLive=!!item.live;
-  // FILMES E SERIES: video direto (mp4, mkv, ts)
-  if(item._t==='mov'||item._t==='ser'){
+
+  // Detecta se e stream HLS ou ficheiro direto
+  var isHLS = u.includes('.m3u8') || u.includes('/live/') ||
+              (u.includes('get.php') && !u.includes('.mp4') && !u.includes('.mkv') && !u.includes('.avi'));
+  var isDirect = u.includes('.mp4') || u.includes('.mkv') || u.includes('.avi') || u.includes('.mov');
+
+  // FILMES/SERIES com URL direto mp4/mkv: usa video tag diretamente
+  if((item._t==='mov'||item._t==='ser') && isDirect && !isHLS){
     vid.src=url;vid.style.display='block';
     vid.volume=S.vol/100;vid.muted=S.muted;
     vid.load();
@@ -597,24 +603,23 @@ function initStream(item){
       showLD(false);
       vid.play().catch(function(e){
         console.warn('direct play err:',e);
-        if(typeof Hls!=='undefined'&&Hls.isSupported()&&(u.includes('.ts')||u.includes('m3u8'))){
-          initHLS(url,false);
-        } else {
-          onErr('Nao foi possivel reproduzir. Tenta abrir em VLC.');
-        }
+        onErr('Nao foi possivel reproduzir. Tenta abrir em VLC.');
       });
     }
     vid.addEventListener('canplaythrough',tryPlay,{once:true});
-    setTimeout(function(){if(!played){vid.removeEventListener('canplaythrough',tryPlay);tryPlay();}},5000);
+    setTimeout(function(){if(!played){vid.removeEventListener('canplaythrough',tryPlay);tryPlay();}},6000);
     return;
   }
-  // CANAIS: HLS primeiro
+
+  // TUDO O RESTO (canais HLS, filmes TS, series TS): usa HLS.js
   if(typeof Hls!=='undefined'&&Hls.isSupported()){
     initHLS(url,isLive);
   } else if(vid.canPlayType('application/vnd.apple.mpegurl')){
+    // Safari nativo
     vid.src=url;vid.style.display='block';vid.volume=S.vol/100;
     vid.play().then(function(){showLD(false);}).catch(function(){onErr('Erro de reproducao.');});
   } else {
+    // Fallback direto
     vid.src=url;vid.style.display='block';vid.volume=S.vol/100;vid.load();
     vid.play().catch(function(){onErr('HLS nao suportado neste browser.');});
   }
