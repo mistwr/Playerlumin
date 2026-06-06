@@ -453,7 +453,24 @@ function doGate(){
 
 async function loadAll(){
   if(LOADED)return;
-  showLoad(true,'A ligar ao servidor...',10,'');
+  showLoad(true,'A verificar ligacao...',10,'');
+
+  // Teste rapido ao servidor
+  var ok=false;
+  try{
+    var t=await fetchM3U(PROXY+'/get.php?username='+USR+'&password='+PWD+'&type=m3u&output=ts');
+    if(t&&t.indexOf('#EXTINF')>=0)ok=true;
+  }catch(ex){console.warn('Test failed:',ex.message);}
+
+  if(!ok){
+    // Servidor nao acessivel - mostrar ecra para aceitar certificado
+    showLoad(false);
+    showCertScreen();
+    return;
+  }
+
+  // Ligacao OK - carregar tudo
+  showLoad(true,'A carregar canais e filmes...',30,'');
   var urls=[
     PROXY+'/get.php?username='+USR+'&password='+PWD+'&type=m3u_plus&output=ts',
     PROXY+'/get.php?username='+USR+'&password='+PWD+'&type=m3u_plus',
@@ -461,7 +478,7 @@ async function loadAll(){
   ];
   var txt=null;
   for(var i=0;i<urls.length;i++){
-    showLoad(true,'A carregar playlist...',20+i*20,'Tentativa '+(i+1)+'/3');
+    showLoad(true,'A carregar...',40+i*15,'Tentativa '+(i+1)+'/3');
     try{txt=await fetchM3U(urls[i]);if(txt&&txt.indexOf('#EXTINF')>=0)break;}catch(ex){console.warn(ex.message);}
   }
   if(txt&&txt.indexOf('#EXTINF')>=0){
@@ -470,11 +487,38 @@ async function loadAll(){
     LOADED=true;
     toast(CH.length+' canais, '+MOV.length+' filmes, '+SER.length+' series','ok');
   } else {
-    toast('Erro ao carregar. Verifica a ligacao.','err');
+    toast('Erro ao carregar. Tenta novamente.','err');
   }
   showLoad(false);
   updateBadges();
   renderSec();
+}
+
+function showCertScreen(){
+  G('cnt').innerHTML =
+    '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:24px;text-align:center">'+
+    '<div style="font-size:48px;margin-bottom:16px">🔐</div>'+
+    '<div style="font-size:17px;font-weight:800;color:var(--t1);margin-bottom:8px">Passo necessario (1x)</div>'+
+    '<div style="font-size:13px;color:var(--t2);line-height:1.8;max-width:300px;margin-bottom:24px">'+
+    'O servidor usa um certificado proprio.<br>'+
+    'Precisas de o aceitar <b style="color:var(--t1)">uma unica vez</b>.<br><br>'+
+    '<b style="color:var(--acc)">1.</b> Clica o botao abaixo<br>'+
+    '<b style="color:var(--acc)">2.</b> Aceita o aviso de seguranca<br>'+
+    '<b style="color:var(--acc)">3.</b> Fecha a tab e volta aqui'+
+    '</div>'+
+    '<button id="certBtn" style="padding:14px 32px;background:linear-gradient(135deg,#3b9eff,#1a6fd4);border:none;border-radius:40px;color:#fff;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px;box-shadow:0 0 22px rgba(59,158,255,.5)">'+
+    '🔓 Aceitar certificado do servidor</button><br>'+
+    '<button id="certRetryBtn" style="padding:11px 28px;background:var(--bg3);border:1px solid var(--bdrg);border-radius:40px;color:var(--t1);font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">'+
+    '🔄 Ja aceitei — Carregar</button>'+
+    '</div>';
+
+  G('certBtn').addEventListener('click',function(){
+    window.open('https://campelo.c2018.xyz:443','_blank');
+  });
+  G('certRetryBtn').addEventListener('click',function(){
+    LOADED=false;
+    loadAll();
+  });
 }
 
 function parseM3U(txt){
