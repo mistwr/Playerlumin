@@ -587,23 +587,27 @@ function initStream(item){
   var u=url.toLowerCase();
   var isLive=!!item.live;
 
-  // Detecta se e stream HLS ou ficheiro direto
-  var isHLS = u.includes('.m3u8') || u.includes('/live/') ||
-              (u.includes('get.php') && !u.includes('.mp4') && !u.includes('.mkv') && !u.includes('.avi'));
-  var isDirect = u.includes('.mp4') || u.includes('.mkv') || u.includes('.avi') || u.includes('.mov');
+  // REGRA SIMPLES E CLARA:
+  // Canais ao vivo (_t==='ch') -> sempre HLS.js (suporta .m3u8 e .ts)
+  // Filmes/Series com .mp4/.mkv -> video direto
+  // Filmes/Series com .ts -> HLS.js
 
-  // FILMES/SERIES com URL direto mp4/mkv: usa video tag diretamente
-  if((item._t==='mov'||item._t==='ser') && isDirect && !isHLS){
-    vid.src=url;vid.style.display='block';
-    vid.volume=S.vol/100;vid.muted=S.muted;
+  var isMp4 = u.includes('.mp4') || u.includes('.mkv') || u.includes('.avi') || u.includes('.mov');
+
+  // Filmes e series com mp4 direto
+  if((item._t==='mov'||item._t==='ser') && isMp4){
+    vid.src=url;
+    vid.style.display='block';
+    vid.volume=S.vol/100;
+    vid.muted=S.muted;
     vid.load();
     var played=false;
     function tryPlay(){
       if(played)return;played=true;
       showLD(false);
       vid.play().catch(function(e){
-        console.warn('direct play err:',e);
-        onErr('Nao foi possivel reproduzir. Tenta abrir em VLC.');
+        console.warn('mp4 play err:',e);
+        onErr('Nao foi possivel reproduzir. Tenta VLC.');
       });
     }
     vid.addEventListener('canplaythrough',tryPlay,{once:true});
@@ -611,39 +615,72 @@ function initStream(item){
     return;
   }
 
-  // TUDO O RESTO (canais HLS, filmes TS, series TS): usa HLS.js
+  // Canais ao vivo e tudo o resto: HLS.js
   if(typeof Hls!=='undefined'&&Hls.isSupported()){
-    initHLS(url,isLive);
+    // Para canais .ts, tenta primeiro .m3u8
+    var hlsUrl = url;
+    if(isLive && u.endsWith('.ts')){
+      hlsUrl = url.replace(/\.ts(\?.*)?$/, '.m3u8');
+    }
+    initHLS(hlsUrl, isLive, url);
   } else if(vid.canPlayType('application/vnd.apple.mpegurl')){
-    // Safari nativo
     vid.src=url;vid.style.display='block';vid.volume=S.vol/100;
     vid.play().then(function(){showLD(false);}).catch(function(){onErr('Erro de reproducao.');});
   } else {
-    // Fallback direto
     vid.src=url;vid.style.display='block';vid.volume=S.vol/100;vid.load();
-    vid.play().catch(function(){onErr('HLS nao suportado neste browser.');});
+    vid.play().catch(function(){onErr('Formato nao suportado.');});
   }
 }
 
-function initHLS(url,isLive){
+function initHLS(url,isLive,fallbackUrl){
   var vid=G('pvid');
   if(S.hls){S.hls.destroy();S.hls=null;}
-  var hls=new Hls({enableWorker:true,lowLatencyMode:!!isLive,maxBufferLength:isLive?10:30,fragLoadingTimeOut:20000,manifestLoadingTimeOut:15000,startLevel:-1});
-  S.hls=hls;hls.loadSource(url);hls.attachMedia(vid);
+  var hls=new Hls({
+    enableWorker:true,
+    lowLatencyMode:!!isLive,
+    maxBufferLength:isLive?10:30,
+    maxMaxBufferLength:isLive?20:60,
+    fragLoadingTimeOut:20000,
+    manifestLoadingTimeOut:15000,
+    levelLoadingTimeOut:15000,
+    startLevel:-1,
+    xhrSetup:function(xhr,u){xhr.withCredentials=false;}
+  });
+  S.hls=hls;
+  hls.loadSource(url);
+  hls.attachMedia(vid);
   hls.on(Hls.Events.MANIFEST_PARSED,function(_,d){
     showLD(false);vid.style.display='block';vid.volume=S.vol/100;vid.muted=S.muted;
-    vid.play().catch(function(e){console.warn(e);});buildQual(d.levels);
+    vid.play().catch(function(e){console.warn(e);});
+    buildQual(d.levels);
   });
   hls.on(Hls.Events.ERROR,function(_,d){
     if(!d.fatal)return;
+    console.warn('HLS error:',d.type,d.details);
     if(d.type===Hls.ErrorTypes.NETWORK_ERROR){
-      if(S.retries<3){S.retries++;G('pLdSb').textContent='Reconectar '+S.retries+'/3...';showLD(true);setTimeout(function(){hls.startLoad();},2000*S.retries);}
-      else if(S.cur&&S.cur.urlTs&&!S.cur._triedTs){S.cur._triedTs=true;toast('A tentar formato TS...','warn');initHLS(S.cur.urlTs,isLive);}
-      else onErr('Erro de rede. Verifica as credenciais.');
+      if(S.retries<2){
+        S.retries++;
+        G('pLdSb').textContent='Reconectar '+S.retries+'/2...';
+        showLD(true);
+        setTimeout(function(){hls.startLoad();},1500*S.retries);
+      } else if(fallbackUrl && fallbackUrl!==url){
+        // .m3u8 falhou, tenta .ts original
+        toast('A tentar formato alternativo...','warn');
+        S.retries=0;
+        initHLS(fallbackUrl,isLive,null);
+      } else if(S.cur&&S.cur.url&&S.cur.url!==url){
+        // tenta url original
+        toast('A tentar URL original...','warn');
+        S.retries=0;
+        initHLS(S.cur.url,isLive,null);
+      } else {
+        onErr('Erro de rede. Verifica a ligacao e as credenciais.');
+      }
     } else if(d.type===Hls.ErrorTypes.MEDIA_ERROR){
-      hls.recoverMediaError();
+      if(S.retries<2){S.retries++;hls.recoverMediaError();}
+      else onErr('Erro de media. O stream pode estar offline.');
     } else {
-      onErr('Erro fatal: '+d.details);
+      onErr('Erro: '+d.details+'. Verifica as credenciais.');
     }
   });
 }
