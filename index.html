@@ -431,8 +431,8 @@ async function loadVOD(){
   if(txt&&txt.includes("#EXTINF")){
     showGLoad(true,"A processar...",80,"");
     var all=parseM3U(txt);
-    S.mov=all.filter(function(x){return x._t==="mov";});
-    S.ser=all.filter(function(x){return x._t==="ser";});
+    S.mov=all.filter(function(x){return x._t===\x27mov\x27;});
+    S.ser=all.filter(function(x){return x._t===\x27ser\x27;});
     S.vodLoaded=true;
     toast(S.mov.length+" filmes e "+S.ser.length+" series carregadas","ok");
   } else {
@@ -440,7 +440,7 @@ async function loadVOD(){
   }
   showGLoad(false);
   updateBadges();
-  if(S.sec==="mov"||S.sec==="ser"||S.sec==="home")renderSec();
+  if(S.sec===\x27mov\x27||S.sec===\x27ser\x27||S.sec==="home")renderSec();
 }
 
 function parseM3U(txt){
@@ -457,11 +457,11 @@ function parseM3U(txt){
       cur.url=l.trim();cur.id=1000+items.length;cur.name=cur.name||("Item "+(items.length+1));cur.category=cur.group||"Geral";cur.icon=cur.icon||"";
       var g=(cur.group||"").toLowerCase();var u=(cur.url||"").toLowerCase();
       if(u.includes("/movie/")||g.includes("movie")||g.includes("filme")||g.includes("vod")||g.includes("novidade")||g.includes("cinema")){
-        cur._t="mov";
+        cur._t=\x27mov\x27;
       }else if(u.includes("/series/")||g.includes("serie")||g.includes("season")||g.includes("temp")){
-        cur._t="ser";cur.seasons=1;
+        cur._t=\x27ser\x27;cur.seasons=1;
       }else{
-        return;// ignora canais do xtream - usamos os gratuitos
+        cur={};continue;// ignora canais do xtream - usamos os gratuitos
       }
       items.push(Object.assign({},cur));cur={};
     }
@@ -482,7 +482,7 @@ function updateBadges(){
   var fn=S.favs.length;G("nb-fv").style.display=fn?"":"none";G("nb-fv").textContent=fn;
 }
 
-function nav(s){S.sec=s;S.q="";S.catF="Todos";S.genF="Todos";S.serF="Todos";document.querySelectorAll(".ni").forEach(function(e){e.classList.remove("on");});var ni=G("ni-"+s);if(ni)ni.classList.add("on");G("tbTtl").textContent=TITLES[s]||s;G("sInp").value="";if((s==="mov"||s==="ser")&&!S.vodLoaded)loadVOD();renderSec();closeSB();}
+function nav(s){S.sec=s;S.q="";S.catF="Todos";S.genF="Todos";S.serF="Todos";document.querySelectorAll(".ni").forEach(function(e){e.classList.remove("on");});var ni=G("ni-"+s);if(ni)ni.classList.add("on");G("tbTtl").textContent=TITLES[s]||s;G("sInp").value="";if((s===\x27mov\x27||s===\x27ser\x27)&&!S.vodLoaded)loadVOD();renderSec();closeSB();}
 function toggleSB(){S.sbOpen?closeSB():openSB();}
 function openSB(){S.sbOpen=true;G("sb").classList.add("open");G("sbo").classList.add("v");}
 function closeSB(){S.sbOpen=false;G("sb").classList.remove("open");G("sbo").classList.remove("v");}
@@ -492,8 +492,8 @@ function renderSec(){
   var c=G("cnt");
   if(S.sec==="home")c.innerHTML=rHome();
   else if(CAT_MAP[S.sec])c.innerHTML=rCatChannels(S.sec);
-  else if(S.sec==="mov")c.innerHTML=rMov();
-  else if(S.sec==="ser")c.innerHTML=rSer();
+  else if(S.sec===\x27mov\x27)c.innerHTML=rMov();
+  else if(S.sec===\x27ser\x27)c.innerHTML=rSer();
   else if(S.sec==="fav")c.innerHTML=rFav();
   else if(S.sec==="his")c.innerHTML=rHis();
   else if(S.sec==="srch")c.innerHTML=rSrch();
@@ -508,16 +508,16 @@ function chsBySection(sec){
 function rHome(){
   var ptChs=S.ch.filter(function(c){return c.cat==="Portugal";}).slice(0,4);
   var newsChs=S.ch.filter(function(c){return c.cat==="Noticias";}).slice(0,4);
-  return "<div class='hero'><div class='h-bdg'>LUMIN AI PLAYER</div><div class='h-ttl'>O teu entretenimento sem limites</div><div class='h-sub'>Canais gratuitos reais + filmes e series da tua conta.</div><div class='h-btns'><button class='hbtn p' onclick='nav("tv")'>&#128250; TV Portugal</button><button class='hbtn s' onclick='nav("news")'>&#128240; Noticias</button><button class='hbtn s' onclick='nav("mov")'>&#127909; Filmes</button></div></div>"
+  return "<div class='hero'><div class='h-bdg'>LUMIN AI PLAYER</div><div class='h-ttl'>O teu entretenimento sem limites</div><div class='h-sub'>Canais gratuitos reais + filmes e series da tua conta.</div><div class='h-btns'><button class='hbtn p' onclick='nav(\x27tv\x27)'>&#128250; TV Portugal</button><button class='hbtn s' onclick='nav(\x27news\x27)'>&#128240; Noticias</button><button class='hbtn s' onclick='nav(\x27mov\x27)'>&#127909; Filmes</button></div></div>"
   +"<div class='stats'>"
-  +"<div class='sc' onclick='nav("tv")'><div class='sc-ic'>&#127987;</div><div class='sc-n'>"+S.ch.filter(function(c){return c.cat==="Portugal";}).length+"</div><div class='sc-l'>PT Canais</div></div>"
-  +"<div class='sc' onclick='nav("news")'><div class='sc-ic'>&#128240;</div><div class='sc-n'>"+S.ch.filter(function(c){return c.cat==="Noticias";}).length+"</div><div class='sc-l'>Noticias</div></div>"
-  +"<div class='sc' onclick='nav("mov")'><div class='sc-ic'>&#127909;</div><div class='sc-n'>"+S.mov.length+"</div><div class='sc-l'>Filmes</div></div>"
-  +"<div class='sc' onclick='nav("ser")'><div class='sc-ic'>&#127871;</div><div class='sc-n'>"+S.ser.length+"</div><div class='sc-l'>Series</div></div>"
+  +"<div class='sc' onclick='nav(\x27tv\x27)'><div class='sc-ic'>&#127987;</div><div class='sc-n'>"+S.ch.filter(function(c){return c.cat==="Portugal";}).length+"</div><div class='sc-l'>PT Canais</div></div>"
+  +"<div class='sc' onclick='nav(\x27news\x27)'><div class='sc-ic'>&#128240;</div><div class='sc-n'>"+S.ch.filter(function(c){return c.cat==="Noticias";}).length+"</div><div class='sc-l'>Noticias</div></div>"
+  +"<div class='sc' onclick='nav(\x27mov\x27)'><div class='sc-ic'>&#127909;</div><div class='sc-n'>"+S.mov.length+"</div><div class='sc-l'>Filmes</div></div>"
+  +"<div class='sc' onclick='nav(\x27ser\x27)'><div class='sc-ic'>&#127871;</div><div class='sc-n'>"+S.ser.length+"</div><div class='sc-l'>Series</div></div>"
   +"</div>"
-  +(ptChs.length?"<div class='sec'><div class='sec-hdr'><div class='sec-ttl'>&#127987; TV Portugal</div><button class='sec-more' onclick='nav("tv")'>Ver todos</button></div><div class='cgrid'>"+ptChs.map(cC).join("")+"</div></div>":"")
-  +(newsChs.length?"<div class='sec'><div class='sec-hdr'><div class='sec-ttl'>&#128240; Noticias</div><button class='sec-more' onclick='nav("news")'>Ver todos</button></div><div class='cgrid'>"+newsChs.map(cC).join("")+"</div></div>":"")
-  +(S.mov.length?"<div class='sec'><div class='sec-hdr'><div class='sec-ttl'>&#127909; Filmes</div><button class='sec-more' onclick='nav("mov")'>Ver todos</button></div><div class='mgrid'>"+S.mov.slice(0,6).map(mC).join("")+"</div></div>":"<div class='sec'><div class='sec-ttl' style='margin-bottom:9px'>&#127909; A carregar filmes...</div></div>");
+  +(ptChs.length?"<div class='sec'><div class='sec-hdr'><div class='sec-ttl'>&#127987; TV Portugal</div><button class='sec-more' onclick='nav(\x27tv\x27)'>Ver todos</button></div><div class='cgrid'>"+ptChs.map(cC).join("")+"</div></div>":"")
+  +(newsChs.length?"<div class='sec'><div class='sec-hdr'><div class='sec-ttl'>&#128240; Noticias</div><button class='sec-more' onclick='nav(\x27news\x27)'>Ver todos</button></div><div class='cgrid'>"+newsChs.map(cC).join("")+"</div></div>":"")
+  +(S.mov.length?"<div class='sec'><div class='sec-hdr'><div class='sec-ttl'>&#127909; Filmes</div><button class='sec-more' onclick='nav(\x27mov\x27)'>Ver todos</button></div><div class='mgrid'>"+S.mov.slice(0,6).map(mC).join("")+"</div></div>":"<div class='sec'><div class='sec-ttl' style='margin-bottom:9px'>&#127909; A carregar filmes...</div></div>");
 }
 
 function rCatChannels(sec){
@@ -562,7 +562,7 @@ function rSrch(){
 }
 
 function rCfg(){
-  return "<div class='sset'><div class='sset-sec'>Conteudo Gratuito</div><div class='sset-it'><span class='sset-ic'>📺</span><span class='sset-lb'>Canais PT Publicos</span><span class='sset-vl' style='color:var(--grn)'>"+S.ch.filter(function(c){return c.cat==="Portugal";}).length+"</span></div><div class='sset-it'><span class='sset-ic'>🌍</span><span class='sset-lb'>Canais Mundo</span><span class='sset-vl' style='color:var(--grn)'>"+S.ch.filter(function(c){return c.cat!=="Portugal";}).length+"</span></div></div><div class='sset'><div class='sset-sec'>VOD Xtream</div><div class='sset-it'><span class='sset-ic'>🎬</span><span class='sset-lb'>Filmes</span><span class='sset-vl' style='color:var(--grn)'>"+S.mov.length+"</span></div><div class='sset-it'><span class='sset-ic'>🍿</span><span class='sset-lb'>Series</span><span class='sset-vl' style='color:var(--grn)'>"+S.ser.length+"</span></div><div class='sset-it' onclick='loadVOD()'><span class='sset-ic'>🔃</span><span class='sset-lb'>Recarregar VOD</span><span style='color:var(--t3)'>›</span></div></div><div class='sset'><div class='sset-sec'>Dados</div><div class='sset-it' onclick='clearHis();toast("Historico limpo","ok")'><span class='sset-ic'>🗑️</span><span class='sset-lb'>Limpar Historico</span><span style='color:var(--t3)'>›</span></div><div class='sset-it' onclick='wipeAll()'><span class='sset-ic'>🔐</span><span class='sset-lb' style='color:var(--red)'>Apagar Dados</span><span style='color:var(--t3)'>›</span></div></div><div class='sset'><div class='sset-sec'>Sobre</div><div class='sset-it'><span class='sset-ic'>💡</span><span class='sset-lb'>LUMIN AI PLAYER</span><span class='sset-vl'>v8.0</span></div><div class='sset-it'><span class='sset-ic'>⚡</span><span class='sset-lb'>by REBORN AI</span><span class='sset-vl'>2026</span></div></div>";
+  return "<div class='sset'><div class='sset-sec'>Conteudo Gratuito</div><div class='sset-it'><span class='sset-ic'>📺</span><span class='sset-lb'>Canais PT Publicos</span><span class='sset-vl' style='color:var(--grn)'>"+S.ch.filter(function(c){return c.cat==="Portugal";}).length+"</span></div><div class='sset-it'><span class='sset-ic'>🌍</span><span class='sset-lb'>Canais Mundo</span><span class='sset-vl' style='color:var(--grn)'>"+S.ch.filter(function(c){return c.cat!=="Portugal";}).length+"</span></div></div><div class='sset'><div class='sset-sec'>VOD Xtream</div><div class='sset-it'><span class='sset-ic'>🎬</span><span class='sset-lb'>Filmes</span><span class='sset-vl' style='color:var(--grn)'>"+S.mov.length+"</span></div><div class='sset-it'><span class='sset-ic'>🍿</span><span class='sset-lb'>Series</span><span class='sset-vl' style='color:var(--grn)'>"+S.ser.length+"</span></div><div class='sset-it' onclick='loadVOD()'><span class='sset-ic'>🔃</span><span class='sset-lb'>Recarregar VOD</span><span style='color:var(--t3)'>›</span></div></div><div class='sset'><div class='sset-sec'>Dados</div><div class='sset-it' onclick='clearHis();toast(\x27Historico limpo\x27,\x27ok\x27)'><span class='sset-ic'>🗑️</span><span class='sset-lb'>Limpar Historico</span><span style='color:var(--t3)'>›</span></div><div class='sset-it' onclick='wipeAll()'><span class='sset-ic'>🔐</span><span class='sset-lb' style='color:var(--red)'>Apagar Dados</span><span style='color:var(--t3)'>›</span></div></div><div class='sset'><div class='sset-sec'>Sobre</div><div class='sset-it'><span class='sset-ic'>💡</span><span class='sset-lb'>LUMIN AI PLAYER</span><span class='sset-vl'>v8.0</span></div><div class='sset-it'><span class='sset-ic'>⚡</span><span class='sset-lb'>by REBORN AI</span><span class='sset-vl'>2026</span></div></div>";
 }
 
 function iconFor(it){var n=String(it.name||"").toLowerCase();if(n.includes("sport")||n.includes("futebol"))return"⚽";if(n.includes("news")||n.includes("notic"))return"📡";if(n.includes("music")||n.includes("mtv"))return"🎵";if(n.includes("cine")||n.includes("film"))return"🎬";if(n.includes("kids")||n.includes("infant"))return"🧒";if(n.includes("wild")||n.includes("animal")||n.includes("nat geo"))return"🦁";return"📺";}
@@ -570,33 +570,34 @@ function iconFor(it){var n=String(it.name||"").toLowerCase();if(n.includes("spor
 function cC(ch){
   var fav=S.favs.includes(ch.id);
   var img=ch.icon?"<img class='cc-img' src='"+eH(ch.icon)+"' alt='' loading='lazy' onerror='this.style.display="none"'/>":"";
-  return "<div class='cc'><div class='cc-thumb'><div class='cc-bg'></div>"+img+"<div class='cc-ico' style='z-index:"+(ch.icon?0:1)+"'>"+( ch.icon?"":iconFor(ch))+"</div>"+(ch.live?"<span class='live-b'><span class='ldot'></span>AO VIVO</span>":"")+"</div><div class='cc-info'><div class='cc-nm' title='"+eH(ch.name)+"'>"+eH(ch.name)+"</div><div class='cc-ct'>"+eH(ch.cat||ch.category||"")+"</div></div><div class='cc-acts'><button class='bpl' onclick='playItem("+ch.id+","ch")'>&#9654; Reproduzir</button><button class='bfv"+(fav?" on":"")+"' onclick='togFav("+ch.id+",this)'>"+(fav?"★":"☆")+"</button></div></div>";
+  return "<div class='cc'><div class='cc-thumb'><div class='cc-bg'></div>"+img+"<div class='cc-ico' style='z-index:"+(ch.icon?0:1)+"'>"+( ch.icon?"":iconFor(ch))+"</div>"+(ch.live?"<span class='live-b'><span class='ldot'></span>AO VIVO</span>":"")+"</div><div class='cc-info'><div class='cc-nm' title='"+eH(ch.name)+"'>"+eH(ch.name)+"</div><div class='cc-ct'>"+eH(ch.cat||ch.category||"")+"</div></div><div class='cc-acts'><button class='bpl' onclick='playItem("+ch.id+",\x27ch\x27)'>&#9654; Reproduzir</button><button class='bfv"+(fav?" on":"")+"' onclick='togFav("+ch.id+",this)'>"+(fav?"★":"☆")+"</button></div></div>";
 }
 
 function mC(m){
   var img=m.icon?"<img src='"+eH(m.icon)+"' alt='' loading='lazy' onerror='this.style.display="none"'/>":"";
-  return "<div class='mc' onclick='playItem("+m.id+","mov")'><div class='mp'><div class='mp-bg'></div>"+img+"<div class='mp-ico'>"+(m.icon?"":iconFor(m))+"</div><div class='mp-ov'></div><button class='mp-btn'>&#9654; Ver</button></div><div class='mi'><div class='mi-ttl' title='"+eH(m.name)+"'>"+eH(m.name)+"</div><div class='mi-mt'>"+eH(m.category||"")+"</div></div></div>";
+  return "<div class='mc' onclick='playItem("+m.id+",\x27mov\x27)'><div class='mp'><div class='mp-bg'></div>"+img+"<div class='mp-ico'>"+(m.icon?"":iconFor(m))+"</div><div class='mp-ov'></div><button class='mp-btn'>&#9654; Ver</button></div><div class='mi'><div class='mi-ttl' title='"+eH(m.name)+"'>"+eH(m.name)+"</div><div class='mi-mt'>"+eH(m.category||"")+"</div></div></div>";
 }
 
 function sC(s){
   var img=s.icon?"<img class='cc-img' src='"+eH(s.icon)+"' alt='' loading='lazy' onerror='this.style.display="none"' style='object-fit:cover'/>":"";
-  return "<div class='cc'><div class='cc-thumb'><div class='cc-bg'></div>"+img+"<div class='cc-ico' style='z-index:"+(s.icon?0:1)+"'>"+(s.icon?"":iconFor(s))+"</div></div><div class='cc-info'><div class='cc-nm' title='"+eH(s.name)+"'>"+eH(s.name)+"</div><div class='cc-ct'>"+eH(s.category||"")+"</div></div><div class='cc-acts'><button class='bpl' onclick='playItem("+s.id+","ser")'>&#9654; Ver</button></div></div>";
+  return "<div class='cc'><div class='cc-thumb'><div class='cc-bg'></div>"+img+"<div class='cc-ico' style='z-index:"+(s.icon?0:1)+"'>"+(s.icon?"":iconFor(s))+"</div></div><div class='cc-info'><div class='cc-nm' title='"+eH(s.name)+"'>"+eH(s.name)+"</div><div class='cc-ct'>"+eH(s.category||"")+"</div></div><div class='cc-acts'><button class='bpl' onclick='playItem("+s.id+",\x27ser\x27)'>&#9654; Ver</button></div></div>";
 }
 
-function pills(cats,field){return "<div class='pills'>"+cats.slice(0,25).map(function(c){return "<button class='pill"+(S[field]===c?" on":"")+"' onclick='S."+field+"=""+eH(c)+"";renderSec()'>"+eH(c)+"</button>";}).join("")+"</div>";}
+function pills(cats,field){return "<div class=\'pills\'>"+cats.slice(0,25).map(function(v){return "<button class=\'pill"+(S[field]===v?" on":"")+"\' onclick=\'setF(\""+field+"\",\""+eH(v)+"\")\'>"+eH(v)+"</button>";}).join("")+"</div>";}
+function setF(field,val){S[field]=val;renderSec();}
 function emptyS(ic,tx,sb){return "<div class='empty'><div class='empty-ic'>"+ic+"</div><div class='empty-tx'>"+tx+"</div><div class='empty-sb'>"+sb+"</div></div>";}
 
 function playItem(id,type){
   var item=null;
-  if(type==="ch")item=S.ch.find(function(x){return x.id==id;});
-  if(type==="mov")item=S.mov.find(function(x){return x.id==id;});
-  if(type==="ser")item=S.ser.find(function(x){return x.id==id;});
+  if(type===\x27ch\x27)item=S.ch.find(function(x){return x.id==id;});
+  if(type===\x27mov\x27)item=S.mov.find(function(x){return x.id==id;});
+  if(type===\x27ser\x27)item=S.ser.find(function(x){return x.id==id;});
   if(!item){toast("Item nao encontrado","err");return;}
   if(!item.url){toast("URL nao disponivel","err");return;}
   startPlay(item,type);
 }
 
-function playHist(i){var it=S.hist[i];if(!it||!it.url)return;startPlay(it,it._type||"ch");}
+function playHist(i){var it=S.hist[i];if(!it||!it.url)return;startPlay(it,it._type||\x27ch\x27);}
 
 function startPlay(item,type){
   S.cur=item;S.retries=0;
@@ -624,7 +625,7 @@ function initStream(item,type){
   if(S.hls){S.hls.destroy();S.hls=null;}
   vid.pause();vid.removeAttribute("src");vid.load();
   var url=item.url;
-  var isLive=(type==="ch");
+  var isLive=(type===\x27ch\x27);
 
   if(!isLive){
     // Filmes e series: video direto
@@ -692,7 +693,7 @@ function doHLS(url,onFail){
 }
 
 function onErr(msg){showLD(true);G("pLdNm").textContent=S.cur?S.cur.name:"";G("pLdSb").textContent="";G("pLdErr").textContent=msg;G("pLdErr").style.display="block";G("pRetry").style.display="inline-block";G("pvid").style.display="none";}
-function retryPlay(){if(!S.cur)return;S.retries=0;G("pLdErr").style.display="none";G("pRetry").style.display="none";showLD(true,"A reconectar...");initStream(S.cur,S.cur._type||"ch");}
+function retryPlay(){if(!S.cur)return;S.retries=0;G("pLdErr").style.display="none";G("pRetry").style.display="none";showLD(true,"A reconectar...");initStream(S.cur,S.cur._type||\x27ch\x27);}
 function onVidErr(){var vid=G("pvid");if(!vid.error)return;var msgs={1:"Abortado",2:"Erro de rede",3:"Formato invalido",4:"Nao suportado"};onErr((msgs[vid.error.code]||"Erro")+" - Verifica a ligacao.");}
 function buildQual(lvs){if(!lvs||!lvs.length){G("qualList").innerHTML="<div class='pp-item on'>Auto</div>";return;}var h="<div class='pp-item on' onclick='setQual(-1,this)'>Auto</div>";lvs.forEach(function(lv,i){var l=lv.height?lv.height+"p":(lv.bitrate?Math.round(lv.bitrate/1000)+"k":"Nivel "+i);h+="<div class='pp-item' onclick='setQual("+i+",this)'>"+l+"</div>";});G("qualList").innerHTML=h;}
 function setQual(idx,el){if(!S.hls)return;S.hls.currentLevel=idx;document.querySelectorAll("#qualList .pp-item").forEach(function(e){e.classList.remove("on");});el.classList.add("on");G("pBQ").textContent=idx===-1?"AUTO":(S.hls.levels[idx]&&S.hls.levels[idx].height?S.hls.levels[idx].height+"p":"Q"+idx);closeAllP();}
