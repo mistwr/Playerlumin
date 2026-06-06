@@ -347,7 +347,13 @@ async function loadAll(){
     LOADED=true;
     toast(CH.length+' canais, '+MOV.length+' filmes, '+SER.length+' series','ok');
   } else {
-    toast('Erro ao carregar. Verifica a ligacao.','err');
+    // Provavelmente certificado bloqueado - pede ao utilizador para aceitar
+    showLoad(false);
+    var cnt=G('cnt');
+    cnt.innerHTML='<div class="empty"><div class="empty-ic">&#128274;</div><div class="empty-tx">Nao foi possivel ligar</div><div class="empty-sb" style="line-height:1.8">O servidor usa um certificado proprio.<br>Clica o botao abaixo para o aceitar,<br>depois volta aqui e recarrega.</div><div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;align-items:center"><button id="trustBtn" style="padding:10px 24px;background:var(--acc);border:none;border-radius:30px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128274; Aceitar certificado do servidor</button><button id="retryBtn" style="padding:10px 24px;background:var(--bg3);border:1px solid var(--bdr);border-radius:30px;color:var(--t1);font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128259; Tentar novamente</button></div></div>';
+    var tb=G('trustBtn');if(tb)tb.addEventListener('click',function(){window.open('https://campelo.c2018.xyz:443','_blank');});
+    var rb=G('retryBtn');if(rb)rb.addEventListener('click',function(){LOADED=false;loadAll();});
+    return;
   }
   showLoad(false);
   updateBadges();
@@ -384,7 +390,7 @@ function parseM3U(txt){
 }
 
 async function fetchTxt(url){
-  var ctrl=new AbortController(),tid=setTimeout(function(){ctrl.abort();},25000);
+  var ctrl=new AbortController(),tid=setTimeout(function(){ctrl.abort();},35000);
   try{var r=await fetch(url,{signal:ctrl.signal,cache:'no-store'});clearTimeout(tid);if(!r.ok)throw new Error('HTTP '+r.status);return await r.text();}
   catch(e){clearTimeout(tid);throw e;}
 }
