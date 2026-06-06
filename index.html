@@ -4,6 +4,12 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="theme-color" content="#04060d"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="LUMIN AI"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
 <title>LUMIN AI PLAYER</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.12/dist/hls.min.js"></script>
@@ -14,8 +20,9 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg)}
 body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--bdrg);border-radius:3px}
 #gate{position:fixed;inset:0;z-index:3000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse 90% 80% at 50% 40%,#091b38,var(--bg) 70%)}
-.g-orb{width:88px;height:88px;border-radius:50%;margin-bottom:20px;background:radial-gradient(circle at 34% 30%,#d0eaff,#3b9eff 42%,#0a46c0 82%);box-shadow:0 0 55px rgba(59,158,255,.7),0 0 110px rgba(59,158,255,.28);animation:orbP 2.6s ease-in-out infinite}
-@keyframes orbP{0%,100%{transform:scale(1)}50%{transform:scale(1.06);box-shadow:0 0 85px rgba(59,158,255,.95),0 0 160px rgba(59,158,255,.48)}}
+.g-logo{margin-bottom:10px;animation:orbP 2.6s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(59,158,255,.7))}
+@keyframes orbP{0%,100%{transform:scale(1)}50%{transform:scale(1.06);filter:drop-shadow(0 0 28px rgba(59,158,255,.95))}}
+.g-sub-brand{font-size:22px;font-weight:900;letter-spacing:8px;color:var(--acc);margin-top:-4px;margin-bottom:4px;text-shadow:0 0 20px rgba(59,158,255,.6)}
 .g-title{font-size:28px;font-weight:900;letter-spacing:5px;background:linear-gradient(135deg,#fff,#b0d8ff 50%,#3b9eff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .g-sub{font-size:11px;color:var(--t2);letter-spacing:3px;margin-top:3px;margin-bottom:26px}
 .g-dots{display:flex;gap:12px;margin-bottom:14px}
@@ -25,6 +32,8 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
 .g-inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accs)}
 .g-btn{margin-top:11px;padding:10px 36px;background:linear-gradient(135deg,#3b9eff,#1a6fd4);border:none;border-radius:40px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:1px;font-family:'Outfit',sans-serif}
 .g-err{color:var(--red);font-size:12px;margin-top:7px;min-height:16px}
+.g-install{margin-top:14px;padding:10px 28px;background:linear-gradient(135deg,#22d3a0,#0fa870);border:none;border-radius:40px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.5px;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:8px;box-shadow:0 0 20px rgba(34,211,160,.4);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(34,211,160,.4)}50%{box-shadow:0 0 35px rgba(34,211,160,.7)}}
 #app{display:none;height:100%;flex-direction:row}
 .sidebar{width:var(--sw);flex-shrink:0;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;height:100%;overflow:hidden;z-index:10;transition:transform .22s}
 .sb-brand{padding:14px 14px 11px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bdr);flex-shrink:0}
@@ -176,13 +185,38 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
 </head>
 <body>
 <div id="gate">
-  <div class="g-orb"></div>
+  <div class="g-logo">
+    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="orbG" cx="35%" cy="32%" r="65%">
+          <stop offset="0%" stop-color="#d0eaff"/>
+          <stop offset="42%" stop-color="#3b9eff"/>
+          <stop offset="100%" stop-color="#0a46c0"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Orb -->
+      <circle cx="50" cy="46" r="34" fill="url(#orbG)" filter="url(#glow)"/>
+      <!-- Highlight -->
+      <ellipse cx="40" cy="36" rx="9" ry="6" fill="rgba(255,255,255,0.38)" transform="rotate(-20 40 36)"/>
+      <!-- TV screen shape at bottom -->
+      <rect x="22" y="82" width="56" height="7" rx="3.5" fill="#3b9eff" opacity="0.7"/>
+      <rect x="44" y="78" width="12" height="6" rx="2" fill="#3b9eff" opacity="0.5"/>
+    </svg>
+  </div>
   <div class="g-title">LUMIN AI</div>
+  <div class="g-sub-brand">TV</div>
   <div class="g-sub">PLAYER</div>
   <div class="g-dots"><div class="g-dot" id="gd0"></div><div class="g-dot" id="gd1"></div><div class="g-dot" id="gd2"></div><div class="g-dot" id="gd3"></div></div>
   <input class="g-inp" id="gInp" type="password" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="&#8226;&#8226;&#8226;&#8226;"/>
   <div id="gErr" class="g-err"></div>
   <button class="g-btn" id="gBtn">Entrar</button>
+  <button class="g-install" id="installBtn" style="display:none">
+    <span>&#11015;</span> Instalar App
+  </button>
 </div>
 <div id="gLoad"><div class="gl-spin"></div><div class="gl-txt" id="glTxt">A carregar...</div><div class="gl-bar"><div class="gl-fill" id="glFill" style="width:0%"></div></div><div class="gl-sub" id="glSub"></div></div>
 <div id="app">
@@ -284,6 +318,36 @@ function showLoad(show,txt,pct,sub){G('gLoad').style.display=show?'flex':'none';
 window.addEventListener('DOMContentLoaded',function(){
   try{var f=lsG('lf'),h=lsG('lh');if(f)FAVS=JSON.parse(f);if(h)HIST=JSON.parse(h);}catch(e){}
   var gi=G('gInp');
+  // PWA Install
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    var btn = G('installBtn');
+    if(btn) btn.style.display = 'flex';
+  });
+  window.addEventListener('appinstalled', function() {
+    var btn = G('installBtn');
+    if(btn) btn.style.display = 'none';
+    deferredPrompt = null;
+    toast('App instalada com sucesso!', 'ok');
+  });
+  var installBtn = G('installBtn');
+  if(installBtn) {
+    installBtn.addEventListener('click', function() {
+      if(!deferredPrompt) {
+        toast('Usa o menu do browser > Adicionar ao ecra inicial', 'warn');
+        return;
+      }
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(r) {
+        if(r.outcome === 'accepted') toast('A instalar LUMIN AI TV...', 'ok');
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      });
+    });
+  }
+
   gi.addEventListener('input',function(e){var v=e.target.value;for(var i=0;i<4;i++)G('gd'+i).classList.toggle('on',i<v.length);if(v.length===4)setTimeout(doGate,80);});
   gi.addEventListener('keydown',function(e){if(e.key==='Enter')doGate();});
   G('gBtn').addEventListener('click',doGate);
@@ -773,6 +837,11 @@ function buildSpd(){var cur=G('pvid').playbackRate||1;var h='';for(var i=0;i<SPE
 function onKey(e){if(G('player').style.display!=='flex')return;if(e.key===' '||e.key==='k'){e.preventDefault();togglePlay();}else if(e.key==='Escape')closePlayer();else if(e.key==='ArrowRight'){seekRel(10);showCtrl();}else if(e.key==='ArrowLeft'){seekRel(-10);showCtrl();}else if(e.key==='f')toggleFS();}
 function addHist(it){var key=String(it.id);HIST=[it].concat(HIST.filter(function(h){return String(h.id)!==key;})).slice(0,40);try{lsS('lh',JSON.stringify(HIST));}catch(e){}}
 function togFav(id,btn){var i=FAVS.indexOf(id);if(i>=0){FAVS.splice(i,1);if(btn){btn.classList.remove('on');btn.innerHTML='&#9734;';}toast('Removido dos favoritos');}else{FAVS.push(id);if(btn){btn.classList.add('on');btn.innerHTML='&#9733;';}toast('Adicionado','ok');}try{lsS('lf',JSON.stringify(FAVS));}catch(e){}updateBadges();}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
 </script>
 </body>
 </html>
