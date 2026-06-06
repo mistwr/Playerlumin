@@ -278,7 +278,7 @@ window.addEventListener('DOMContentLoaded',function(){
   gi.addEventListener('keydown',function(e){if(e.key==='Enter')doGate();});
   G('gBtn').addEventListener('click',doGate);
   var navs=['home','tv','mov','ser','fav','his','srch','cfg'];
-  for(var i=0;i<navs.length;i++){(function(s){var el=G('ni-'+s);if(el)el.addEventListener('click',function(){nav(s);});})(navs[i];}
+  for(var i=0;i<navs.length;i++){(function(s){var el=G('ni-'+s);if(el)el.addEventListener('click',function(){nav(s);});})(navs[i]);}
   G('sbo').addEventListener('click',closeSB);
   G('tbMenu').addEventListener('click',toggleSB);
   G('sInp').addEventListener('input',function(e){Q=e.target.value;if(Q&&SEC==='home')SEC='srch';renderSec();});
