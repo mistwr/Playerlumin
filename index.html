@@ -256,7 +256,7 @@ body{font-family:'Outfit',sans-serif;color:var(--t1);-webkit-font-smoothing:anti
       <div class="nsl">Biblioteca</div>
       <div class="ni" id="ni-fav" onclick="nav('fav')"><span class="ni-ic">⭐</span>Favoritos<span class="nb" id="nb-fv" style="display:none">0</span></div>
       <div class="ni" id="ni-his" onclick="nav('his')"><span class="ni-ic">🕐</span>Historico</div>
-      <div class="nsl">Sistema</div>
+      <div class="ni" onclick="window.open('https://nostv.pt/canais/139','_blank')" style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(79,70,229,.15));color:#a78bfa;border-color:rgba(124,58,237,.25)"><span class="ni-ic">✨</span>Magic TV</div><div class="nsl">Sistema</div>
       <div class="ni" id="ni-srch" onclick="nav('srch')"><span class="ni-ic">🔍</span>Pesquisa</div>
       <div class="ni" id="ni-cfg" onclick="nav('cfg')"><span class="ni-ic">⚙️</span>Definicoes</div>
     </div>
@@ -397,7 +397,7 @@ function openSB(){S.sbOpen=true;G('sb').classList.add('open');G('sbo').classList
 function closeSB(){S.sbOpen=false;G('sb').classList.remove('open');G('sbo').classList.remove('v');}
 function onSearch(q){S.q=q;if(q&&S.sec==='home')S.sec='srch';renderSec();}
 function renderSec(){var c=G('cnt');if(S.sec==='home')c.innerHTML=rHome();else if(S.sec==='tv')c.innerHTML=rTV();else if(S.sec==='mov')c.innerHTML=rMov();else if(S.sec==='ser')c.innerHTML=rSer();else if(S.sec==='fav')c.innerHTML=rFav();else if(S.sec==='his')c.innerHTML=rHis();else if(S.sec==='srch')c.innerHTML=rSrch();else if(S.sec==='cfg')c.innerHTML=rCfg();}
-function rHome(){return '<div class="hero"><div class="h-bdg">LUMIN AI PLAYER</div><div class="h-ttl">O teu entretenimento sem limites</div><div class="h-sub">TV ao vivo, filmes e series da tua conta Xtream.</div><div class="h-btns"><button class="hbtn p" onclick="nav(\'tv\')">▶ TV ao Vivo</button><button class="hbtn s" onclick="nav(\'mov\')">🎬 Filmes</button><button class="hbtn s" onclick="nav(\'ser\')">🍿 Series</button></div></div><div class="stats"><div class="sc" onclick="nav(\'tv\')"><div class="sc-ic">📺</div><div class="sc-n">'+S.ch.length+'</div><div class="sc-l">Canais</div></div><div class="sc" onclick="nav(\'mov\')"><div class="sc-ic">🎬</div><div class="sc-n">'+S.mov.length+'</div><div class="sc-l">Filmes</div></div><div class="sc" onclick="nav(\'ser\')"><div class="sc-ic">🍿</div><div class="sc-n">'+S.ser.length+'</div><div class="sc-l">Series</div></div><div class="sc" onclick="nav(\'fav\')"><div class="sc-ic">⭐</div><div class="sc-n">'+S.favs.length+'</div><div class="sc-l">Favoritos</div></div></div>'+(S.ch.length?'<div class="sec"><div class="sec-hdr"><div class="sec-ttl">📺 TV ao Vivo</div><button class="sec-more" onclick="nav(\'tv\')">Ver todos</button></div><div class="cgrid">'+S.ch.slice(0,6).map(cC).join('')+'</div></div>':'')+(S.mov.length?'<div class="sec"><div class="sec-hdr"><div class="sec-ttl">🎬 Filmes</div><button class="sec-more" onclick="nav(\'mov\')">Ver todos</button></div><div class="mgrid">'+S.mov.slice(0,6).map(mC).join('')+'</div></div>':'');}
+function rHome(){return '<div class="hero"><div class="h-bdg">LUMIN AI PLAYER</div><div class="h-ttl">O teu entretenimento sem limites</div><div class="h-sub">TV ao vivo, filmes e series da tua conta Xtream.</div><div class="h-btns"><button class="hbtn p" onclick="nav(\'tv\')">▶ TV ao Vivo</button><button class="hbtn s" onclick="nav(\'mov\')">🎬 Filmes</button><button class="hbtn s" onclick="nav(\'ser\')">🍿 Series</button><button class="hbtn s" onclick="window.open('https://nostv.pt/canais/139','_blank')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;box-shadow:0 0 14px rgba(124,58,237,.4)">✨ Magic TV</button></div></div><div class="stats"><div class="sc" onclick="nav(\'tv\')"><div class="sc-ic">📺</div><div class="sc-n">'+S.ch.length+'</div><div class="sc-l">Canais</div></div><div class="sc" onclick="nav(\'mov\')"><div class="sc-ic">🎬</div><div class="sc-n">'+S.mov.length+'</div><div class="sc-l">Filmes</div></div><div class="sc" onclick="nav(\'ser\')"><div class="sc-ic">🍿</div><div class="sc-n">'+S.ser.length+'</div><div class="sc-l">Series</div></div><div class="sc" onclick="nav(\'fav\')"><div class="sc-ic">⭐</div><div class="sc-n">'+S.favs.length+'</div><div class="sc-l">Favoritos</div></div></div>'+(S.ch.length?'<div class="sec"><div class="sec-hdr"><div class="sec-ttl">📺 TV ao Vivo</div><button class="sec-more" onclick="nav(\'tv\')">Ver todos</button></div><div class="cgrid">'+S.ch.slice(0,6).map(cC).join('')+'</div></div>':'')+(S.mov.length?'<div class="sec"><div class="sec-hdr"><div class="sec-ttl">🎬 Filmes</div><button class="sec-more" onclick="nav(\'mov\')">Ver todos</button></div><div class="mgrid">'+S.mov.slice(0,6).map(mC).join('')+'</div></div>':'');}
 function rTV(){var cats=['Todos'].concat([...new Set(S.ch.map(function(c){return c.category;}).filter(Boolean))]);var list=S.ch.filter(function(c){return(S.catF==='Todos'||c.category===S.catF)&&(!S.q||c.name.toLowerCase().includes(S.q.toLowerCase()));});return pills(cats,'catF')+(list.length?'<div class="cgrid">'+list.map(cC).join('')+'</div>':emptyS('📺','Sem canais',''));}
 function rMov(){var cats=['Todos'].concat([...new Set(S.mov.map(function(m){return m.category;}).filter(Boolean))]);var list=S.mov.filter(function(m){return(S.genF==='Todos'||m.category===S.genF)&&(!S.q||m.name.toLowerCase().includes(S.q.toLowerCase()));});return pills(cats,'genF')+(list.length?'<div class="mgrid">'+list.map(mC).join('')+'</div>':emptyS('🎬','Sem filmes',''));}
 function rSer(){var cats=['Todos'].concat([...new Set(S.ser.map(function(s){return s.category;}).filter(Boolean))]);var list=S.ser.filter(function(s){return(S.serF==='Todos'||s.category===S.serF)&&(!S.q||s.name.toLowerCase().includes(S.q.toLowerCase()));});return pills(cats,'serF')+(list.length?'<div class="cgrid">'+list.map(sC).join('')+'</div>':emptyS('🍿','Sem series',''));}
@@ -414,42 +414,114 @@ function play(id,type){var item;if(type==='ch')item=S.ch.find(function(x){return
 function playHist(i){var it=S.hist[i];if(!it||!it.url)return;startPlay(it);}
 function startPlay(item){S.cur=item;S.retries=0;addHist(item);G('player').style.display='flex';document.body.style.overflow='hidden';G('pTtl').textContent=item.name;G('pCatTxt').textContent=item.category||'';G('pLive').style.display=item.live?'flex':'none';G('pLdNm').textContent=item.name;G('pLdSb').textContent='A ligar ao servidor...';G('pLdErr').style.display='none';G('pLdErr').textContent='';G('pRetry').style.display='none';showLD(true);var vid=G('pvid');vid.style.display='none';G('pFill').style.width='0%';G('pBuf').style.width='0%';G('pTh').style.left='0%';G('pTime').textContent='--:-- / --:--';G('pBQ').textContent='AUTO';G('pBS').textContent='1x';closeAllP();showCtrl();initStream(item);}
 
-// ═══════════════════════════════════════════════
-// THE KEY FUNCTION — decide how to play each type
-// Channels: always HLS.js (they are .ts streams)  
-// Movies/Series: try native video first (mp4/ts direct)
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// STREAM ENGINE v7
+// Canais: tenta 3 URLs em sequência (.ts → .m3u8 → HLS.js)
+// Filmes/Series: video nativo direto
+// ═══════════════════════════════════════════════════
 function initStream(item){
   var vid=G('pvid');
   if(S.hls){S.hls.destroy();S.hls=null;}
   vid.pause();vid.removeAttribute('src');vid.load();
-  var url=item.url;
   var isLive=item._t==='ch';
 
-  if(isLive){
-    // CANAIS: sempre HLS.js — suporta .ts e .m3u8
-    startHLS(url,true);
-  } else {
-    // FILMES/SERIES: video direto nativo
-    // O browser suporta mp4, ts, mkv diretamente sem HLS.js
-    vid.src=url;
-    vid.style.display='block';
-    vid.volume=S.vol/100;
-    vid.muted=S.muted;
-    vid.load();
-    var done=false;
-    function onReady(){if(done)return;done=true;showLD(false);vid.play().catch(function(e){console.warn(e);if(!done){done=true;onErr('Nao foi possivel reproduzir. Tenta abrir em VLC.');}});}
-    vid.addEventListener('canplay',onReady,{once:true});
-    setTimeout(function(){if(!done){vid.removeEventListener('canplay',onReady);done=true;showLD(false);vid.play().catch(function(){onErr('Timeout ao carregar o ficheiro.');});}},8000);
+  if(!isLive){
+    // FILMES E SERIES: direto nativo (funciona bem)
+    playDirect(item.url, false, function(){
+      onErr('Nao foi possivel reproduzir. Tenta VLC.');
+    });
+    return;
   }
+
+  // CANAIS AO VIVO: sequência de tentativas
+  var rawUrl=item.url; // URL original do M3U (geralmente .ts)
+  // Constrói URL .m3u8 substituindo .ts
+  var m3u8Url=rawUrl.replace(/\.ts(\?.*)?$/,'.m3u8$1');
+  if(m3u8Url===rawUrl && !rawUrl.includes('.m3u8')){
+    // Se não tinha .ts, adiciona .m3u8 como alternativa
+    m3u8Url=rawUrl.replace(/(\?.*)?$/,'.m3u8$1');
+  }
+
+  // Tenta sequencialmente: .ts nativo → .m3u8 nativo → HLS.js com .m3u8 → HLS.js com .ts
+  var attempts=[
+    {url:m3u8Url, method:'native', label:'M3U8 nativo'},
+    {url:rawUrl,  method:'native', label:'TS nativo'},
+    {url:m3u8Url, method:'hls',    label:'HLS.js M3U8'},
+    {url:rawUrl,  method:'hls',    label:'HLS.js TS'}
+  ];
+  tryNextAttempt(attempts, 0);
 }
 
-function startHLS(url,isLive){
+function tryNextAttempt(attempts, idx){
+  if(idx >= attempts.length){
+    onErr('Canal indisponivel. Pode estar offline ou requer app dedicada.');
+    return;
+  }
+  var a=attempts[idx];
+  G('pLdSb').textContent='A tentar... ('+a.label+')';
+  console.log('Attempt',idx+1,a.label,a.url);
+
+  if(a.method==='hls'){
+    if(typeof Hls!=='undefined' && Hls.isSupported()){
+      startHLS(a.url, true, function(){
+        // HLS falhou, tenta próximo
+        tryNextAttempt(attempts, idx+1);
+      });
+    } else {
+      tryNextAttempt(attempts, idx+1);
+    }
+    return;
+  }
+
+  // Método nativo
+  playDirect(a.url, true, function(){
+    // Falhou, tenta próximo
+    tryNextAttempt(attempts, idx+1);
+  });
+}
+
+function playDirect(url, isLive, onFail){
   var vid=G('pvid');
+  if(S.hls){S.hls.destroy();S.hls=null;}
+  vid.pause();vid.removeAttribute('src');vid.load();
+  vid.src=url;
+  vid.style.display='block';
+  vid.volume=S.vol/100;
+  vid.muted=S.muted;
+  vid.load();
+
+  var settled=false;
+  function success(){
+    if(settled)return;settled=true;
+    vid.removeEventListener('error',fail);
+    showLD(false);
+    vid.play().catch(function(e){
+      console.warn('play() blocked:',e);
+      // autoplay bloqueado mas stream OK
+      showLD(false);
+    });
+  }
+  function fail(){
+    if(settled)return;settled=true;
+    vid.removeEventListener('canplay',success);
+    console.warn('native fail:',url);
+    if(onFail)onFail();
+  }
+  vid.addEventListener('canplay', success, {once:true});
+  vid.addEventListener('error', fail, {once:true});
+  // Timeout mais curto para canais ao vivo
+  setTimeout(function(){
+    if(!settled){settled=true;vid.removeEventListener('canplay',success);vid.removeEventListener('error',fail);if(onFail)onFail();}
+  }, isLive?5000:10000);
+}
+
+function startHLS(url,isLive,onFail){
+  var vid=G('pvid');
+  if(S.hls){S.hls.destroy();S.hls=null;}
+  vid.pause();vid.removeAttribute('src');vid.load();
   if(typeof Hls==='undefined'||!Hls.isSupported()){
-    // Safari nativo
-    vid.src=url;vid.style.display='block';vid.volume=S.vol/100;
-    vid.play().then(function(){showLD(false);}).catch(function(){onErr('Erro de reproducao.');});
+    if(onFail)onFail();
+    else onErr('HLS nao suportado.');
     return;
   }
   var hls=new Hls({
@@ -457,40 +529,31 @@ function startHLS(url,isLive){
     lowLatencyMode:!!isLive,
     maxBufferLength:isLive?8:30,
     maxMaxBufferLength:isLive?16:60,
-    fragLoadingTimeOut:20000,
-    manifestLoadingTimeOut:15000,
-    levelLoadingTimeOut:15000,
+    fragLoadingTimeOut:12000,
+    manifestLoadingTimeOut:10000,
+    levelLoadingTimeOut:10000,
     startLevel:-1
   });
   S.hls=hls;
+  var settled=false;
   hls.loadSource(url);
   hls.attachMedia(vid);
   hls.on(Hls.Events.MANIFEST_PARSED,function(e,d){
+    settled=true;
     showLD(false);
     vid.style.display='block';
     vid.volume=S.vol/100;
     vid.muted=S.muted;
-    vid.play().catch(function(e){console.warn('play blocked:',e);});
+    vid.play().catch(function(e){console.warn('play blocked:',e);showLD(false);});
     buildQual(d.levels);
   });
   hls.on(Hls.Events.ERROR,function(e,d){
-    if(!d.fatal)return;
+    if(!d.fatal||settled)return;
+    settled=true;
     console.warn('HLS fatal:',d.type,d.details);
-    if(d.type===Hls.ErrorTypes.NETWORK_ERROR){
-      if(S.retries<3){
-        S.retries++;
-        G('pLdSb').textContent='Reconectar '+S.retries+'/3...';
-        showLD(true);
-        setTimeout(function(){if(S.hls===hls)hls.startLoad();},1500*S.retries);
-      } else {
-        onErr('Erro de rede. O canal pode estar offline ou as credenciais invalidas.');
-      }
-    } else if(d.type===Hls.ErrorTypes.MEDIA_ERROR){
-      if(S.retries<2){S.retries++;hls.recoverMediaError();}
-      else onErr('Erro de media. Tenta novamente.');
-    } else {
-      onErr('Erro ao carregar o canal ('+d.details+').');
-    }
+    hls.destroy();S.hls=null;
+    if(onFail)onFail();
+    else onErr('Canal indisponivel ('+d.details+').');
   });
 }
 
